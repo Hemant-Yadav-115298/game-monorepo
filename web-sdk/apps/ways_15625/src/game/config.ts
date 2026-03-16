@@ -1,23 +1,30 @@
 export default {
 	providerName: 'sample_provider',
 	gameName: 'sample_lines',
-	gameID: '0_0_ways',
-	rtp: 0.97,
-	numReels: 5,
-	numRows: [3, 3, 3, 3, 3],
+	gameID: '2_0_tbd_15625ways',
+	rtp: 0.96,
+	numReels: 6,
+	numRows: [5, 5, 5, 5, 5, 5],
 	betModes: {
 		base: {
 			cost: 1.0,
 			feature: true,
 			buyBonus: false,
-			rtp: 0.97,
+			rtp: 0.96,
 			max_win: 5000,
 		},
-		bonus: {
+		bonus_fs: {
+			cost: 80.0,
+			feature: false,
+			buyBonus: true,
+			rtp: 0.96,
+			max_win: 5000,
+		},
+		bonus_hns: {
 			cost: 100.0,
 			feature: false,
 			buyBonus: true,
-			rtp: 0.97,
+			rtp: 0.96,
 			max_win: 5000,
 		},
 	},
@@ -56,16 +63,23 @@ export default {
 			paytable: null,
 			special_properties: ['scatter'],
 		},
+		M: {
+			paytable: null,
+			special_properties: ['money'],
+		},
 		L1: {
 			paytable: [
 				{
-					'5': 2,
+					'6': 2,
 				},
 				{
-					'4': 0.8,
+					'5': 1,
 				},
 				{
-					'3': 0.4,
+					'4': 0.4,
+				},
+				{
+					'3': 0.2,
 				},
 			],
 		},
@@ -152,5 +166,6 @@ export default {
 		basegame: '',
 		freegame: '',
 		superspingame: '',
+		holdnspin: '',
 	},
 };
