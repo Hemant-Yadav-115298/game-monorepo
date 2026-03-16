@@ -77,6 +77,11 @@ export const stateGame = $state({
 	gameType: 'basegame' as GameType,
 	multiplierBoard: [] as (MultiplierSymbol | undefined)[][],
 	scatterCounter: 0,
+	holdAndSpin: {
+		isActive: false,
+		respinsLeft: 0,
+		jackpotWon: null as string | null,
+	},
 });
 
 const boardLayout = () => ({

@@ -9,90 +9,23 @@ export const REEL_PADDING = 0.53;
 // initial board (padded top and bottom)
 export const INITIAL_BOARD: RawSymbol[][] = [
 	[
-		{
-			name: 'H1',
-		},
-		{
-			name: 'H1',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'L4',
-		},
+		{ name: 'H1' }, { name: 'H1' }, { name: 'L4' }, { name: 'L4' }, { name: 'L4' }, { name: 'L1' }, { name: 'L1' }
 	],
 	[
-		{
-			name: 'H1',
-		},
-		{
-			name: 'H1',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'L4',
-		},
-		{
-			name: 'H3',
-		},
+		{ name: 'H1' }, { name: 'H1' }, { name: 'L4' }, { name: 'L4' }, { name: 'H3' }, { name: 'L2' }, { name: 'L2' }
 	],
 	[
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H2',
-		},
+		{ name: 'L2' }, { name: 'L2' }, { name: 'L3' }, { name: 'L3' }, { name: 'H2' }, { name: 'L3' }, { name: 'L3' }
 	],
 	[
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'H5',
-		},
-		{
-			name: 'H5',
-		},
+		{ name: 'L3' }, { name: 'H2' }, { name: 'H2' }, { name: 'H5' }, { name: 'H5' }, { name: 'M' }, { name: 'M' }
 	],
 	[
-		{
-			name: 'L3',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'H2',
-		},
-		{
-			name: 'L2',
-		},
-		{
-			name: 'L2',
-		},
+		{ name: 'L3' }, { name: 'H2' }, { name: 'H2' }, { name: 'L2' }, { name: 'L2' }, { name: 'H1' }, { name: 'H1' }
 	],
+	[
+		{ name: 'H4' }, { name: 'H4' }, { name: 'L1' }, { name: 'L1' }, { name: 'H3' }, { name: 'H3' }, { name: 'L4' }
+	]
 ];
 
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
@@ -189,6 +122,7 @@ const l5Static = {
 	animationName: 'low_multiplier_static',
 	sizeRatios: { width: 0.3, height: 0.3 },
 };
+const mStatic = l5Static;
 
 const sStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.243, height: 1.243 } };
 const wStatic = { type: 'sprite', assetKey: 'w.png', sizeRatios: { width: 1.12, height: 1.12 } };
@@ -314,7 +248,7 @@ export const SYMBOL_INFO_MAP = {
 		spin: l4Static,
 		land: l4Static,
 	},
-	L5: {
+	M: {
 		explosion,
 		win: {
 			type: 'spine',
@@ -322,10 +256,10 @@ export const SYMBOL_INFO_MAP = {
 			animationName: 'low_multiplier_pay',
 			sizeRatios: { width: 0.3, height: 0.3 },
 		},
-		postWinStatic: l5Static,
-		static: l5Static,
-		spin: l5Static,
-		land: l5Static,
+		postWinStatic: mStatic,
+		static: mStatic,
+		spin: mStatic,
+		land: mStatic,
 	},
 	W: {
 		explosion,
