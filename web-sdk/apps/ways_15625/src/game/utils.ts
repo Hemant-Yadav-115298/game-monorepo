@@ -71,3 +71,17 @@ export const getSymbolInfo = ({
 	}
 	return stateInfo;
 };
+
+/**
+ * Normalizes a board from the RGS to match the internal height (e.g. 7 symbols).
+ * If a reel has 5 symbols, it adds padding (duplicating top and bottom symbols).
+ */
+export const normalizeBoard = (board: RawSymbol[][]) => {
+	return board.map((reel) => {
+		if (reel.length === 5) {
+			// Pad 5 symbols to 7: [P, 0, 1, 2, 3, 4, P]
+			return [reel[0], ...reel, reel[reel.length - 1]];
+		}
+		return reel;
+	});
+};
