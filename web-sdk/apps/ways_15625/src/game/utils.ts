@@ -59,5 +59,15 @@ export const getSymbolInfo = ({
 	rawSymbol: RawSymbol;
 	state: SymbolState;
 }) => {
-	return SYMBOL_INFO_MAP[rawSymbol.name][state];
+	const symbolInfo = SYMBOL_INFO_MAP[rawSymbol.name];
+	if (!symbolInfo) {
+		console.warn(`Symbol info not found for name: ${rawSymbol.name}`);
+		return SYMBOL_INFO_MAP['L1'][state]; // Fallback to L1
+	}
+	const stateInfo = symbolInfo[state];
+	if (!stateInfo) {
+		console.warn(`Symbol state info not found for name: ${rawSymbol.name}, state: ${state}`);
+		return symbolInfo['static']; // Fallback to static
+	}
+	return stateInfo;
 };

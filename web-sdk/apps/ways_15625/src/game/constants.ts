@@ -9,22 +9,22 @@ export const REEL_PADDING = 0.53;
 // initial board (padded top and bottom)
 export const INITIAL_BOARD: RawSymbol[][] = [
 	[
-		{ name: 'H1' }, { name: 'H1' }, { name: 'L4' }, { name: 'L4' }, { name: 'L4' }, { name: 'L1' }, { name: 'L1' }
+		{ name: 'DRI' }, { name: 'DRI' }, { name: 'LAN' }, { name: 'LAN' }, { name: 'LAN' }, { name: 'A' }, { name: 'A' }
 	],
 	[
-		{ name: 'H1' }, { name: 'H1' }, { name: 'L4' }, { name: 'L4' }, { name: 'H3' }, { name: 'L2' }, { name: 'L2' }
+		{ name: 'DRI' }, { name: 'DRI' }, { name: 'LAN' }, { name: 'LAN' }, { name: 'GCA' }, { name: 'K' }, { name: 'K' }
 	],
 	[
-		{ name: 'L2' }, { name: 'L2' }, { name: 'L3' }, { name: 'L3' }, { name: 'H2' }, { name: 'L3' }, { name: 'L3' }
+		{ name: 'K' }, { name: 'K' }, { name: 'Q' }, { name: 'Q' }, { name: 'DIA' }, { name: 'Q' }, { name: 'Q' }
 	],
 	[
-		{ name: 'L3' }, { name: 'H2' }, { name: 'H2' }, { name: 'H5' }, { name: 'H5' }, { name: 'M' }, { name: 'M' }
+		{ name: 'Q' }, { name: 'DIA' }, { name: 'DIA' }, { name: 'PIC' }, { name: 'PIC' }, { name: 'M' }, { name: 'M' }
 	],
 	[
-		{ name: 'L3' }, { name: 'H2' }, { name: 'H2' }, { name: 'L2' }, { name: 'L2' }, { name: 'H1' }, { name: 'H1' }
+		{ name: 'Q' }, { name: 'DIA' }, { name: 'DIA' }, { name: 'K' }, { name: 'K' }, { name: 'DRI' }, { name: 'DRI' }
 	],
 	[
-		{ name: 'H4' }, { name: 'H4' }, { name: 'L1' }, { name: 'L1' }, { name: 'H3' }, { name: 'H3' }, { name: 'L4' }
+		{ name: 'TNT' }, { name: 'TNT' }, { name: 'A' }, { name: 'A' }, { name: 'GCA' }, { name: 'GCA' }, { name: 'LAN' }
 	]
 ];
 
@@ -130,7 +130,8 @@ const wStatic = { type: 'sprite', assetKey: 'w.png', sizeRatios: { width: 1.12, 
 const wSizeRatios = { width: 1.5 * 0.9, height: SPECIAL_SYMBOL_SIZE * 1.15 };
 const sSizeRatios = { width: 2.5, height: SPECIAL_SYMBOL_SIZE * 2.3 };
 
-export const SYMBOL_INFO_MAP = {
+// Basic info templates
+const infoMap: Record<string, any> = {
 	H1: {
 		explosion,
 		win: {
@@ -296,6 +297,23 @@ export const SYMBOL_INFO_MAP = {
 			sizeRatios: sSizeRatios,
 		},
 	},
+};
+
+export const SYMBOL_INFO_MAP: Record<string, any> = {
+	...infoMap,
+	// Math SDK Aliases
+	DRI: infoMap.H1,
+	DIA: infoMap.H2,
+	GCA: infoMap.H3,
+	TNT: infoMap.H4,
+	PIC: infoMap.H5,
+	HEL: infoMap.L1,
+	LAN: infoMap.L2,
+	A: infoMap.L3,
+	K: infoMap.L4,
+	Q: infoMap.L3,
+	J: infoMap.L4,
+	'10': infoMap.L2,
 } as const;
 
 export const SCATTER_LAND_SOUND_MAP = {
