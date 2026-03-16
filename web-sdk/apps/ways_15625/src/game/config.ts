@@ -6,21 +6,21 @@ export default {
 	numReels: 6,
 	numRows: [5, 5, 5, 5, 5, 5],
 	betModes: {
-		base: {
+		BASE: {
 			cost: 1.0,
 			feature: true,
 			buyBonus: false,
 			rtp: 0.96,
 			max_win: 5000,
 		},
-		bonus_fs: {
+		BONUS_FS: {
 			cost: 80.0,
 			feature: false,
 			buyBonus: true,
 			rtp: 0.96,
 			max_win: 5000,
 		},
-		bonus_hns: {
+		BONUS_HNS: {
 			cost: 100.0,
 			feature: false,
 			buyBonus: true,

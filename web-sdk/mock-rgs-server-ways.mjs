@@ -27,6 +27,559 @@ let roundIdCounter = 1;
 // ─── Embedded Sample Books (from apps/lines/src/stories/data) ────────────────
 
 
+
+const BONUS_FS_BOOKS = [
+  {
+    "id": 101,
+    "payoutMultiplier": 10,
+    "events": [
+      {
+        "index": 0,
+        "type": "reveal",
+        "board": [
+          [
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "S"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            }
+          ],
+          [
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "S"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            }
+          ],
+          [
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "S"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ]
+        ],
+        "paddingPositions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gameType": "basegame",
+        "anticipation": [
+          0,
+          1,
+          2,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "index": 1,
+        "type": "setTotalWin",
+        "amount": 0
+      },
+      {
+        "index": 2,
+        "type": "freeSpinTrigger",
+        "totalFs": 10,
+        "positions": [
+          {
+            "reel": 0,
+            "row": 1
+          },
+          {
+            "reel": 1,
+            "row": 1
+          },
+          {
+            "reel": 2,
+            "row": 1
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "type": "updateFreeSpin",
+        "amount": 1,
+        "total": 10
+      },
+      {
+        "index": 4,
+        "type": "reveal",
+        "board": [
+          [
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            }
+          ],
+          [
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "DRI"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            }
+          ],
+          [
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ]
+        ],
+        "paddingPositions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gameType": "freegame",
+        "anticipation": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "index": 5,
+        "type": "freeSpinEnd",
+        "amount": 1000,
+        "winLevel": 5
+      },
+      {
+        "index": 6,
+        "type": "finalWin",
+        "amount": 1000
+      }
+    ],
+    "criteria": "freegame"
+  }
+];
+const BONUS_HNS_BOOKS = [
+  {
+    "id": 201,
+    "payoutMultiplier": 5,
+    "events": [
+      {
+        "index": 0,
+        "type": "reveal",
+        "board": [
+          [
+            {
+              "name": "M"
+            },
+            {
+              "name": "M"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            }
+          ],
+          [
+            {
+              "name": "M"
+            },
+            {
+              "name": "M"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "K"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            },
+            {
+              "name": "GCA"
+            }
+          ],
+          [
+            {
+              "name": "M"
+            },
+            {
+              "name": "M"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            },
+            {
+              "name": "PIC"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ],
+          [
+            {
+              "name": "A"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "DIA"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            },
+            {
+              "name": "LAN"
+            }
+          ]
+        ],
+        "paddingPositions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gameType": "basegame",
+        "anticipation": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          0
+        ]
+      },
+      {
+        "index": 1,
+        "type": "setTotalWin",
+        "amount": 0
+      },
+      {
+        "index": 2,
+        "type": "finalWin",
+        "amount": 500
+      }
+    ],
+    "criteria": "holdnspin"
+  }
+];
 const BASE_BOOKS = [
 	{
 		id: 1,
@@ -148,8 +701,17 @@ async function handlePlay(req, res) {
 	const body = await readBody(req);
 	console.log('[mock-rgs] POST /wallet/play', body);
 
-	const betAmount = body.amount || 1000000; // default $1
-	const book = pickRandomBook();
+	const betAmount = body.amount || 1000000;
+	const mode = body.mode || 'BASE';
+	
+	let book;
+	if (mode === 'BONUS_FS') {
+		book = BONUS_FS_BOOKS[Math.floor(Math.random() * BONUS_FS_BOOKS.length)];
+	} else if (mode === 'BONUS_HNS') {
+		book = BONUS_HNS_BOOKS[Math.floor(Math.random() * BONUS_HNS_BOOKS.length)];
+	} else {
+		book = pickRandomBook();
+	}
 
 	// Deduct bet
 	mockBalance -= betAmount;
