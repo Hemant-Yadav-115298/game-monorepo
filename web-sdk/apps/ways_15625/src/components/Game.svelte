@@ -24,6 +24,9 @@
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
 	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
+	import HoldAndSpinFrame from './HoldAndSpinFrame.svelte';
+	import HoldAndSpinCounter from './HoldAndSpinCounter.svelte';
+	import JackpotCelebration from './JackpotCelebration.svelte';
 	import Transition from './Transition.svelte';
 	import I18nTest from './I18nTest.svelte';
 
@@ -90,6 +93,11 @@
 			<FreeSpinCounter />
 		{/if}
 		<FreeSpinOutro />
+		<HoldAndSpinFrame />
+		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
+			<HoldAndSpinCounter />
+		{/if}
+		<JackpotCelebration />
 		<Transition />
 
 		<I18nTest />

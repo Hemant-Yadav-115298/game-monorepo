@@ -71,6 +71,48 @@ type BookEventWinInfo = {
 	}[];
 };
 
+type BookEventHoldAndSpinTrigger = {
+	index: number;
+	type: 'holdAndSpinTrigger';
+	totalRespins: number;
+	moneyPositions: Position[];
+	isFreeSpin: boolean;
+};
+
+type BookEventHoldAndSpinRespin = {
+	index: number;
+	type: 'holdAndSpinRespin';
+	respinNumber: number;
+	respinsRemaining: number;
+	board: RawSymbol[][];
+	newMoneyPositions: Position[];
+	multiplier?: number;
+};
+
+type BookEventHoldAndSpinEnd = {
+	index: number;
+	type: 'holdAndSpinEnd';
+	totalWin: number;
+	jackpot?: string;
+	finalMultiplier?: number;
+};
+
+type BookEventJackpotAwarded = {
+	index: number;
+	type: 'jackpotAwarded';
+	jackpotType: string;
+	jackpotValue: number;
+};
+
+type BookEventMoneySymbolReveal = {
+	index: number;
+	type: 'moneySymbolReveal';
+	position: Position;
+	prizeValue: number;
+	isJackpot: boolean;
+	jackpotType?: string;
+};
+
 // customised
 type BookEventCreateBonusSnapshot = {
 	index: number;
@@ -88,8 +130,11 @@ export type BookEvent =
 	| BookEventFinalWin
 	| BookEventSetWin
 	| BookEventFreeSpinEnd
-	// customised
-	| BookEventCreateBonusSnapshot;
+	| BookEventHoldAndSpinTrigger
+	| BookEventHoldAndSpinRespin
+	| BookEventHoldAndSpinEnd
+	| BookEventJackpotAwarded
+	| BookEventMoneySymbolReveal;
 
 export type Bet = BetType<BookEvent>;
 export type BookEventOfType<T> = Extract<BookEvent, { type: T }>;

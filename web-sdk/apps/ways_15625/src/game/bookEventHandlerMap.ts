@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
 import { stateBet } from 'state-shared';
 import { sequence } from 'utils-shared/sequence';
+import { waitForTimeout } from 'utils-shared/wait';
 
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent, normalizeBoard } from './utils';
@@ -140,6 +141,86 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
 		// Do nothing
+	},
+	holdAndSpinTrigger: async (bookEvent: BookEventOfType<'holdAndSpinTrigger'>) => {
+		// Play drill activation sound and sparks
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_drill_activate' });
+		eventEmitter.broadcast({ type: 'cameraShake', intensity: 10, duration: 500 });
+		
+		// Animate triggering money symbols
+		await animateSymbols({ positions: bookEvent.moneyPositions });
+		
+		// Grid iron frame overlay
+		eventEmitter.broadcast({ type: 'holdAndSpinFrameShow' });
+		eventEmitter.broadcast({
+			type: 'holdAndSpinCounterShow',
+		});
+
+		stateGame.holdAndSpin.previousGameType = stateGame.gameType;
+		stateGame.holdAndSpin.isActive = true;
+		stateGame.holdAndSpin.totalRespins = bookEvent.totalRespins;
+		stateGame.holdAndSpin.respinsLeft = bookEvent.totalRespins;
+		stateGame.holdAndSpin.multiplier = 1;
+		stateGame.gameType = 'holdnspin';
+
+		eventEmitter.broadcast({
+			type: 'holdAndSpinCounterUpdate',
+			current: stateGame.holdAndSpin.respinsLeft,
+			total: stateGame.holdAndSpin.totalRespins,
+		});
+	},
+	holdAndSpinRespin: async (bookEvent: BookEventOfType<'holdAndSpinRespin'>) => {
+		stateGame.holdAndSpin.respinsLeft = bookEvent.respinsRemaining;
+		if (bookEvent.multiplier) {
+			stateGame.holdAndSpin.multiplier = bookEvent.multiplier;
+		}
+
+		eventEmitter.broadcast({
+			type: 'holdAndSpinCounterUpdate',
+			current: stateGame.holdAndSpin.respinsLeft,
+			total: stateGame.holdAndSpin.totalRespins,
+		});
+
+		// Update board with newly locked symbols; keep existing locks by settling the board directly
+		const normalizedBoard = normalizeBoard(bookEvent.board);
+		await stateGameDerived.enhancedBoard.settle(normalizedBoard);
+
+		if (bookEvent.newMoneyPositions.length > 0) {
+			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_money_landing' });
+			eventEmitter.broadcast({ type: 'cameraShake', intensity: 2, duration: 200 });
+			await animateSymbols({ positions: bookEvent.newMoneyPositions });
+		}
+	},
+	holdAndSpinEnd: async (bookEvent: BookEventOfType<'holdAndSpinEnd'>) => {
+		stateGame.holdAndSpin.isActive = false;
+		eventEmitter.broadcast({ type: 'holdAndSpinFrameHide' });
+		eventEmitter.broadcast({ type: 'holdAndSpinCounterHide' });
+		stateGame.gameType = stateGame.holdAndSpin.previousGameType;
+		
+		// Show total win panel
+		eventEmitter.broadcast({ type: 'winShow' });
+		await eventEmitter.broadcastAsync({
+			type: 'winUpdate',
+			amount: bookEvent.totalWin,
+			winLevelData: winLevelMap[9], // Use EPIC WIN for H&S as it's a major feature
+		});
+		await waitForTimeout(2000);
+		eventEmitter.broadcast({ type: 'winHide' });
+		stateGame.holdAndSpin.multiplier = 1;
+		stateGame.holdAndSpin.respinsLeft = 0;
+		stateGame.holdAndSpin.totalRespins = 0;
+		stateGame.holdAndSpin.jackpotWon = null;
+	},
+	jackpotAwarded: async (bookEvent: BookEventOfType<'jackpotAwarded'>) => {
+		stateGame.holdAndSpin.jackpotWon = bookEvent.jackpotType;
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_rock_crack' });
+		eventEmitter.broadcast({ type: 'jackpotCelebrationShow', jackpotType: bookEvent.jackpotType, value: bookEvent.jackpotValue });
+		await waitForTimeout(3000);
+		eventEmitter.broadcast({ type: 'jackpotCelebrationHide' });
+	},
+	moneySymbolReveal: async (bookEvent: BookEventOfType<'moneySymbolReveal'>) => {
+		// Individual money symbol animation if needed
+		// For now just broadcast the info
 	},
 	// customised
 	createBonusSnapshot: async (bookEvent: BookEventOfType<'createBonusSnapshot'>) => {

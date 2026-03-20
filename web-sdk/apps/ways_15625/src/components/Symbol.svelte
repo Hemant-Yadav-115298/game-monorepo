@@ -48,8 +48,21 @@
 		y={props.y}
 		text={`${props.rawSymbol.multiplier}X`}
 		style={{
-			fontFamily: 'gold',
+			fontFamily: 'goldFont',
 			fontSize: 50,
+		}}
+	/>
+{/if}
+
+{#if props.rawSymbol.name === 'M' && props.rawSymbol.prize}
+	<BitmapText
+		anchor={0.5}
+		x={props.x}
+		y={props.y}
+		text={`${(props.rawSymbol.prize / 100).toFixed(0)}X`}
+		style={{
+			fontFamily: 'goldFont',
+			fontSize: 40,
 		}}
 	/>
 {/if}

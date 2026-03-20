@@ -80,7 +80,10 @@ export const stateGame = $state({
 	holdAndSpin: {
 		isActive: false,
 		respinsLeft: 0,
+		totalRespins: 0,
 		jackpotWon: null as string | null,
+		multiplier: 1,
+		previousGameType: 'basegame' as GameType,
 	},
 });
 
