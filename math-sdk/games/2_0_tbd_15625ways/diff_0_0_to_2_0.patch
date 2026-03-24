@@ -1,0 +1,1541 @@
+
+===== math-sdk/games/0_0_ways/game_calculations.py -> math-sdk/games/2_0_tbd_15625ways/game_calculations.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_calculations.py b/math-sdk/games/2_0_tbd_15625ways/game_calculations.py
+index ee30aa3..9365af0 100644
+--- a/math-sdk/games/0_0_ways/game_calculations.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_calculations.py
+@@ -1,5 +1,36 @@
++"""Game calculations - extends base Executables with Hold & Spin win tracking."""
++
+ from src.executables.executables import Executables
+ 
+ 
+ class GameCalculations(Executables):
+-    pass
++    """Additional calculation helpers for TBD 15625 Ways game."""
++
++    def calculate_holdnspin_win(self, board):
++        """Sum all money symbol prize values on the board."""
++        total_prize = 0.0
++        for reel in board:
++            for sym in reel:
++                if sym.prize is not None and sym.prize > 0:
++                    total_prize += sym.prize
++        return total_prize
++
++    def check_holdnspin_full_grid(self, board):
++        """Check if all positions on the board are locked money symbols (GRAND jackpot)."""
++        locked_count = 0
++        for reel in board:
++            for sym in reel:
++                if sym.locked:
++                    locked_count += 1
++        return locked_count >= self.config.holdnspin_total_positions
++
++    def count_money_symbols(self, board=None):
++        """Count money symbols currently on the board."""
++        if board is None:
++            board = self.board
++        count = 0
++        for reel in board:
++            for sym in reel:
++                if sym.name == "M":
++                    count += 1
++        return count
+
+===== math-sdk/games/0_0_ways/game_config.py -> math-sdk/games/2_0_tbd_15625ways/game_config.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_config.py b/math-sdk/games/2_0_tbd_15625ways/game_config.py
+index 3de6945..9c3909d 100644
+--- a/math-sdk/games/0_0_ways/game_config.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_config.py
+@@ -1,3 +1,11 @@
++"""Game-specific configuration for TBD 15625 Ways Hold & Spin slot game.
++
++Grid: 6 Reels +ù 5 Rows = 15,625 ways (5^6)
++Features: Hold & Spin, Free Spins, Fixed Jackpots
++Volatility: Medium-High
++Max Win: 5,000x
++"""
++
+ import os
+ from src.config.config import Config
+ from src.config.distributions import Distribution
+@@ -5,7 +13,7 @@ from src.config.betmode import BetMode
+ 
+ 
+ class GameConfig(Config):
+-    """Game specific configuration class."""
++    """TBD 15625 Ways GÇô 6x5 mining-themed ways game with Hold & Spin and Free Spins."""
+ 
+     _instance = None
+ 
+@@ -16,65 +24,205 @@ class GameConfig(Config):
+ 
+     def __init__(self):
+         super().__init__()
+-        self.game_id = "0_0_ways"
+-        self.provider_number = 0
+-        self.working_name = "sample ways game"
++        self.game_id = "2_0_tbd_15625ways"
++        self.provider_number = 2
++        self.working_name = "tbd 15625 ways hold and spin"
+         self.wincap = 5000
+         self.win_type = "ways"
+-        self.rtp = 0.97
++        self.rtp = 0.96
+         self.construct_paths()
+ 
++        # ---------------------
+         # Game Dimensions
+-        self.num_reels = 5
+-        self.num_rows = [3] * self.num_reels  # Optionally include variable number of rows per reel
+-        # Board and Symbol Properties
++        # ---------------------
++        # 6 reels +ù 5 rows = 5^6 = 15,625 ways
++        self.num_reels = 6
++        self.num_rows = [5] * self.num_reels
++
++        # ---------------------
++        # Paytable (ways pay, left to right, min 3 adjacent reels)
++        # ---------------------
++        # High symbols: DRI (Drill Machine), DIA (Diamond Cluster), GCA (Gold Cart)
++        # Mid symbols:  TNT, PIC (Pickaxe), HEL (Helmet), LAN (Lantern)
++        # Low symbols:  A, K, Q, J, 10
+         self.paytable = {
+-            (5, "H1"): 10,
+-            (4, "H1"): 5,
+-            (3, "H1"): 3,
+-            (5, "H2"): 8,
+-            (4, "H2"): 4,
+-            (3, "H2"): 2,
+-            (5, "H3"): 5,
+-            (4, "H3"): 2,
+-            (3, "H3"): 1,
+-            (5, "H4"): 3,
+-            (4, "H4"): 1,
+-            (3, "H4"): 0.5,
+-            (5, "H5"): 2,
+-            (4, "H5"): 0.8,
+-            (3, "H5"): 0.4,
+-            (5, "L1"): 2,
+-            (4, "L1"): 0.8,
+-            (3, "L1"): 0.4,
+-            (5, "L2"): 1.5,
+-            (4, "L2"): 0.5,
+-            (3, "L2"): 0.2,
+-            (5, "L3"): 1.5,
+-            (4, "L3"): 0.5,
+-            (3, "L3"): 0.2,
+-            (5, "L4"): 1,
+-            (4, "L4"): 0.3,
+-            (3, "L4"): 0.1,
++            # High 3 - Drill Machine (highest)
++            (6, "DRI"): 15,
++            (5, "DRI"): 8,
++            (4, "DRI"): 4,
++            (3, "DRI"): 2,
++            # High 2 - Diamond Cluster
++            (6, "DIA"): 12,
++            (5, "DIA"): 6,
++            (4, "DIA"): 3,
++            (3, "DIA"): 1.5,
++            # High 1 - Gold Cart
++            (6, "GCA"): 10,
++            (5, "GCA"): 5,
++            (4, "GCA"): 2,
++            (3, "GCA"): 1,
++            # Mid 4 - TNT Barrel
++            (6, "TNT"): 4,
++            (5, "TNT"): 2,
++            (4, "TNT"): 1,
++            (3, "TNT"): 0.5,
++            # Mid 3 - Pickaxe
++            (6, "PIC"): 4,
++            (5, "PIC"): 2,
++            (4, "PIC"): 1,
++            (3, "PIC"): 0.5,
++            # Mid 2 - Helmet
++            (6, "HEL"): 4,
++            (5, "HEL"): 2,
++            (4, "HEL"): 1,
++            (3, "HEL"): 0.5,
++            # Mid 1 - Lantern
++            (6, "LAN"): 4,
++            (5, "LAN"): 2,
++            (4, "LAN"): 1,
++            (3, "LAN"): 0.5,
++            # Low 5 - Ace
++            (6, "A"): 2,
++            (5, "A"): 1,
++            (4, "A"): 0.4,
++            (3, "A"): 0.2,
++            # Low 4 - King
++            (6, "K"): 2,
++            (5, "K"): 1,
++            (4, "K"): 0.4,
++            (3, "K"): 0.2,
++            # Low 3 - Queen
++            (6, "Q"): 2,
++            (5, "Q"): 1,
++            (4, "Q"): 0.4,
++            (3, "Q"): 0.2,
++            # Low 2 - Jack
++            (6, "J"): 2,
++            (5, "J"): 1,
++            (4, "J"): 0.4,
++            (3, "J"): 0.2,
++            # Low 1 - Ten
++            (6, "10"): 2,
++            (5, "10"): 1,
++            (4, "10"): 0.4,
++            (3, "10"): 0.2,
+         }
+ 
+         self.include_padding = True
+-        self.special_symbols = {"wild": ["W"], "scatter": ["S"], "multiplier": []}
+ 
++        # ---------------------
++        # Special Symbols
++        # ---------------------
++        # Wild (W): reels 2, 3, 4 only (indices 1, 2, 3), substitutes all except Scatter & Money
++        # Scatter (S): triggers Free Spins, pays anywhere
++        # Money (M): carries prize values, triggers Hold & Spin with 6+
++        self.special_symbols = {
++            "wild": ["W"],
++            "scatter": ["S"],
++            "money": ["M"],
++            "multiplier": [],
++        }
++
++        # ---------------------
++        # Freespin Triggers
++        # ---------------------
+         self.freespin_triggers = {
+             self.basegame_type: {3: 10, 4: 15, 5: 20},
+-            self.freegame_type: {2: 4, 3: 6, 4: 8, 5: 10},
++            self.freegame_type: {3: 5, 4: 10, 5: 15},
++        }
++        self.anticipation_triggers = {self.basegame_type: 2, self.freegame_type: 2}
++
++        # ---------------------
++        # Hold & Spin Configuration
++        # ---------------------
++        self.holdnspin_trigger_count = 6       # Minimum money symbols to trigger Hold & Spin
++        self.holdnspin_initial_respins = 3     # Starting number of respins
++        self.holdnspin_total_positions = 30    # 6 reels +ù 5 rows = full grid for GRAND jackpot
++
++        # Hold & Spin game type identifier
++        self.holdnspin_type = "holdnspin"
++
++        # Money symbol prize value weights (basegame)
++        # FIX: Original 1_0 values were too generous leading to inflated RTP
++        self.money_values_base = {
++            1: 40,
++            2: 25,
++            3: 15,
++            5: 10,
++            10: 6,
++            20: 2,
++            50: 0.5,
++        }
++
++        # Money symbol prize value weights (freegame - minimum 2x)
++        # FIX: Reduced weights for high values to control free spin RTP
++        self.money_values_freegame = {
++            2: 50,
++            3: 25,
++            5: 12,
++            10: 8,
++            20: 3,
++            50: 1,
++        }
++
++        # Jackpot probability: chance that a money symbol is a jackpot
++        # FIX: Reduced from 0.005 (0.5%) to 0.003 (0.3%) to control jackpot RTP contribution
++        self.money_jackpot_prob = 0.003
++
++        # Jackpot types and their multiplier values
++        self.jackpot_values = {
++            "MINI": 20,
++            "MINOR": 50,
++            "MAJOR": 200,
++            "GRAND": 1000,
++        }
++
++        # Jackpot selection weights (when a jackpot IS awarded, which type)
++        # GRAND is only awarded for full grid, not through random selection
++        self.jackpot_weights = {
++            "MINI": 65,
++            "MINOR": 28,
++            "MAJOR": 7,
++        }
++
++        # Hold & Spin respin probability of money symbol per position
++        # FIX: Reduced from 0.10 to 0.04 to control H&S win magnitude
++        # With 30 positions and ~24 empty: 24 +ù 0.04 = ~0.96 new money per respin
++        self.holdnspin_money_prob = 0.04
++
++        # Free spin Hold & Spin multiplier growth per respin round
++        self.fs_holdnspin_mult_growth = 1  # +1 multiplier per respin round
++
++        # Random fully wild reel chance during Free Spins (5% per spec)
++        self.fs_wild_reel_chance = 0.05
++
++        # ---------------------
++        # Reels (6 columns for 6 reels)
++        # ---------------------
++        reels = {
++            "BR0": "BR0.csv",
++            "FR0": "FR0.csv",
++            "FRWCAP": "FRWCAP.csv",
++            "HR0": "HR0.csv",
+         }
+-        self.anticipation_triggers = {self.basegame_type: 2, self.freegame_type: 1}
+-        # Reels
+-        reels = {"BR0": "BR0.csv", "FR0": "FR0.csv", "FRWCAP": "FRWCAP.csv"}
+         self.reels = {}
+         for r, f in reels.items():
+             self.reels[r] = self.read_reels_csv(os.path.join(self.reels_path, f))
+ 
+-        mode_maxwins = {"base": 5000, "bonus": 5000, "superspin": 2000}
++        # ---------------------
++        # Max wins per mode
++        # ---------------------
++        mode_maxwins = {
++            "base": 5000,
++            "bonus_fs": 5000,
++            "bonus_hns": 5000,
++        }
+ 
++        # ---------------------
++        # Bet Modes
++        # ---------------------
+         self.bet_modes = [
++            # ---- BASE MODE ----
+             BetMode(
+                 name="base",
+                 cost=1.0,
+@@ -85,78 +233,122 @@ class GameConfig(Config):
+                 is_buybonus=False,
+                 distributions=[
+                     Distribution(
+-                        criteria="wincap",
+-                        quota=0.001,
+-                        win_criteria=mode_maxwins["base"],
++                        criteria="freegame",
++                        quota=0.08,
+                         conditions={
+                             "reel_weights": {
+                                 self.basegame_type: {"BR0": 1},
+-                                self.freegame_type: {"FR0": 1, "FRWCAP": 5},
++                                self.freegame_type: {"FR0": 1},
++                                self.holdnspin_type: {"HR0": 1},
+                             },
+-                            "force_wincap": True,
++                            "force_wincap": False,
+                             "force_freegame": True,
+                             "scatter_triggers": {3: 100, 4: 20, 5: 5},
+-                            "mult_values": {1: 20, 2: 50, 3: 80, 4: 100, 5: 20},
++                            "money_values": self.money_values_base,
++                            "holdnspin_money_prob": 0.04,
+                         },
+                     ),
+                     Distribution(
+-                        criteria="freegame",
+-                        quota=0.1,
++                        criteria="holdnspin",
++                        quota=0.05,
+                         conditions={
+                             "reel_weights": {
+                                 self.basegame_type: {"BR0": 1},
+                                 self.freegame_type: {"FR0": 1},
++                                self.holdnspin_type: {"HR0": 1},
+                             },
+                             "force_wincap": False,
+-                            "force_freegame": True,
+-                            "scatter_triggers": {3: 100, 4: 20, 5: 5},
+-                            "mult_values": {1: 200, 2: 100, 3: 80, 4: 50, 5: 20},
++                            "force_freegame": False,
++                            "force_holdnspin": True,
++                            "money_values": self.money_values_base,
++                            "holdnspin_money_prob": 0.05,
+                         },
+                     ),
+                     Distribution(
+                         criteria="0",
+-                        quota=0.4,
++                        quota=0.35,
+                         win_criteria=0.0,
+                         conditions={
+-                            "reel_weights": {self.basegame_type: {"BR0": 1}},
++                            "reel_weights": {
++                                self.basegame_type: {"BR0": 1},
++                            },
+                             "force_wincap": False,
+                             "force_freegame": False,
+-                            "mult_values": {1: 1},
++                            "money_values": self.money_values_base,
++                            "holdnspin_money_prob": 0.04,
+                         },
+                     ),
+                     Distribution(
+                         criteria="basegame",
+-                        quota=0.5,
++                        quota=0.521,
+                         conditions={
+-                            "reel_weights": {self.basegame_type: {"BR0": 1}},
++                            "reel_weights": {
++                                self.basegame_type: {"BR0": 1},
++                            },
+                             "force_wincap": False,
+                             "force_freegame": False,
+-                            "mult_values": {1: 1},
++                            "money_values": self.money_values_base,
++                            "holdnspin_money_prob": 0.04,
+                         },
+                     ),
+                 ],
+             ),
++            # ---- FREE SPINS BUY BONUS ----
+             BetMode(
+-                name="bonus",
+-                cost=100.0,
++                name="bonus_fs",
++                cost=80.0,
+                 rtp=self.rtp,
+-                max_win=mode_maxwins["bonus"],
++                max_win=mode_maxwins["bonus_fs"],
+                 auto_close_disabled=False,
+                 is_feature=False,
+                 is_buybonus=True,
+                 distributions=[
+                     Distribution(
+                         criteria="freegame",
+-                        quota=1,
++                        quota=1.0,
+                         conditions={
+                             "reel_weights": {
+                                 self.basegame_type: {"BR0": 1},
+-                                self.freegame_type: {"FR0": 1, "FRWCAP": 5},
++                                # FIX: FR0 weighted 1:1 with FRWCAP
++                                # FRWCAP has ~30% wilds on reels 2,3,4
++                                self.freegame_type: {"FR0": 1, "FRWCAP": 1},
++                                self.holdnspin_type: {"HR0": 1},
+                             },
+                             "force_wincap": False,
+                             "force_freegame": True,
+                             "scatter_triggers": {3: 100, 4: 20, 5: 5},
+-                            "mult_values": {1: 20, 2: 100, 3: 80, 4: 90, 5: 80},
++                            "money_values": self.money_values_freegame,
++                            # FIX: Tuned for ~96% RTP at 80x cost
++                            "holdnspin_money_prob": 0.06,
++                        },
++                    ),
++                ],
++            ),
++            # ---- HOLD & SPIN BUY BONUS ----
++            BetMode(
++                name="bonus_hns",
++                cost=100.0,
++                rtp=self.rtp,
++                max_win=mode_maxwins["bonus_hns"],
++                auto_close_disabled=False,
++                is_feature=False,
++                is_buybonus=True,
++                distributions=[
++                    Distribution(
++                        criteria="holdnspin",
++                        quota=1.0,
++                        conditions={
++                            "reel_weights": {
++                                self.basegame_type: {"BR0": 1},
++                                self.holdnspin_type: {"HR0": 1},
++                            },
++                            "force_wincap": False,
++                            "force_freegame": False,
++                            "force_holdnspin": True,
++                            "money_values": self.money_values_base,
++                            # FIX: Tuned for ~96% RTP at 100x cost
++                            # 24 empty +ù 0.09 = ~2.16 new money per respin
++                            "holdnspin_money_prob": 0.09,
+                         },
+                     ),
+                 ],
+
+===== math-sdk/games/0_0_ways/game_events.py -> math-sdk/games/2_0_tbd_15625ways/game_events.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_events.py b/math-sdk/games/2_0_tbd_15625ways/game_events.py
+index d2bc7fb..d28f227 100644
+--- a/math-sdk/games/0_0_ways/game_events.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_events.py
+@@ -1 +1,97 @@
++"""Game events - imports standard events and defines Hold & Spin specific events."""
++
+ from src.events.events import *
++from copy import deepcopy
++
++
++def holdnspin_trigger_event(gamestate, money_positions, is_freespin=False):
++    """Emit event indicating Hold & Spin feature has been triggered."""
++    positions = []
++    for pos in money_positions:
++        row_offset = 1 if gamestate.config.include_padding else 0
++        positions.append({"reel": pos["reel"], "row": pos["row"] + row_offset})
++
++    event = {
++        "index": len(gamestate.book.events),
++        "type": "holdAndSpinTrigger",
++        "totalRespins": gamestate.holdnspin_respins,
++        "moneyPositions": positions,
++        "isFreeSpin": is_freespin,
++    }
++    gamestate.book.add_event(event)
++
++
++def holdnspin_respin_event(gamestate, respin_num, respins_remaining, new_money_positions, board):
++    """Emit event for each Hold & Spin respin showing the updated board state."""
++    special_attributes = list(gamestate.config.special_symbols.keys())
++    board_client = []
++    for reel_idx, reel in enumerate(board):
++        board_client.append([])
++        for sym in reel:
++            sym_dict = {"name": sym.name}
++            if sym.locked:
++                sym_dict["locked"] = True
++            if sym.prize is not None:
++                sym_dict["prize"] = sym.prize
++            board_client[reel_idx].append(sym_dict)
++
++    new_positions = []
++    row_offset = 1 if gamestate.config.include_padding else 0
++    for pos in new_money_positions:
++        new_positions.append({"reel": pos["reel"], "row": pos["row"] + row_offset})
++
++    event = {
++        "index": len(gamestate.book.events),
++        "type": "holdAndSpinRespin",
++        "respinNumber": respin_num,
++        "respinsRemaining": respins_remaining,
++        "board": board_client,
++        "newMoneyPositions": new_positions,
++    }
++
++    if hasattr(gamestate, "holdnspin_multiplier") and gamestate.holdnspin_multiplier > 1:
++        event["multiplier"] = gamestate.holdnspin_multiplier
++
++    gamestate.book.add_event(event)
++
++
++def holdnspin_end_event(gamestate, total_win, jackpot_type=None):
++    """Emit event indicating Hold & Spin feature has ended with total win."""
++    event = {
++        "index": len(gamestate.book.events),
++        "type": "holdAndSpinEnd",
++        "totalWin": int(round(min(total_win, gamestate.config.wincap) * 100, 0)),
++    }
++    if jackpot_type is not None:
++        event["jackpot"] = jackpot_type
++    if hasattr(gamestate, "holdnspin_multiplier") and gamestate.holdnspin_multiplier > 1:
++        event["finalMultiplier"] = gamestate.holdnspin_multiplier
++
++    gamestate.book.add_event(event)
++
++
++def jackpot_event(gamestate, jackpot_type, jackpot_value):
++    """Emit event for jackpot award."""
++    event = {
++        "index": len(gamestate.book.events),
++        "type": "jackpotAwarded",
++        "jackpotType": jackpot_type,
++        "jackpotValue": int(round(jackpot_value * 100, 0)),
++    }
++    gamestate.book.add_event(event)
++
++
++def money_symbol_event(gamestate, reel, row, prize_value, is_jackpot=False, jackpot_type=None):
++    """Emit event for individual money symbol reveal."""
++    row_offset = 1 if gamestate.config.include_padding else 0
++    event = {
++        "index": len(gamestate.book.events),
++        "type": "moneySymbolReveal",
++        "position": {"reel": reel, "row": row + row_offset},
++        "prizeValue": int(round(prize_value * 100, 0)),
++        "isJackpot": is_jackpot,
++    }
++    if is_jackpot and jackpot_type is not None:
++        event["jackpotType"] = jackpot_type
++
++    gamestate.book.add_event(event)
+
+===== math-sdk/games/0_0_ways/game_executables.py -> math-sdk/games/2_0_tbd_15625ways/game_executables.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_executables.py b/math-sdk/games/2_0_tbd_15625ways/game_executables.py
+index 05dca24..3308493 100644
+--- a/math-sdk/games/0_0_ways/game_executables.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_executables.py
+@@ -1,14 +1,50 @@
++"""Game executables - ways evaluation and Hold & Spin board evaluation."""
++
+ from game_calculations import GameCalculations
+ from src.calculations.ways import Ways
+ 
+ 
+ class GameExecutables(GameCalculations):
+-    """Events specific to 'ways' wins"""
++    """Executable actions for TBD 15625 Ways game: ways wins + Hold & Spin evaluation."""
+ 
+     def evaluate_ways_board(self):
+-        """Populate win-data, record wins, transmit events"""
++        """Populate win-data, record wins, transmit events for ways wins."""
+         self.win_data = Ways.get_ways_data(self.config, self.board)
+         if self.win_data["totalWin"] > 0:
+             Ways.record_ways_wins(self)
+             self.win_manager.update_spinwin(self.win_data["totalWin"])
+         Ways.emit_wayswin_events(self)
++
++    def check_holdnspin_trigger(self):
++        """Check if enough money symbols are on board to trigger Hold & Spin."""
++        money_count = self.count_money_symbols()
++        return money_count >= self.config.holdnspin_trigger_count
++
++    def get_money_positions(self, board=None):
++        """Get all positions where money symbols are located."""
++        if board is None:
++            board = self.board
++        positions = []
++        for reel_idx, reel in enumerate(board):
++            for row_idx, sym in enumerate(reel):
++                if sym.name == "M":
++                    positions.append({"reel": reel_idx, "row": row_idx})
++        return positions
++
++    def get_locked_positions(self, board):
++        """Get all locked symbol positions on the board."""
++        positions = []
++        for reel_idx, reel in enumerate(board):
++            for row_idx, sym in enumerate(reel):
++                if sym.locked:
++                    positions.append({"reel": reel_idx, "row": row_idx})
++        return positions
++
++    def get_unlocked_positions(self, board):
++        """Get all non-locked positions on the board."""
++        positions = []
++        for reel_idx, reel in enumerate(board):
++            for row_idx, sym in enumerate(reel):
++                if not sym.locked:
++                    positions.append({"reel": reel_idx, "row": row_idx})
++        return positions
+
+===== math-sdk/games/0_0_ways/game_optimization.py -> math-sdk/games/2_0_tbd_15625ways/game_optimization.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_optimization.py b/math-sdk/games/2_0_tbd_15625ways/game_optimization.py
+index 9c90f8c..d641c38 100644
+--- a/math-sdk/games/0_0_ways/game_optimization.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_optimization.py
+@@ -1,4 +1,11 @@
+-"""Set conditions/parameters for optimization program program"""
++"""Set conditions/parameters for optimization program for TBD 15625 Ways game.
++
++RTP Split Targets (96%):
++- Base game:  58% of total RTP
++- Free Spins: 20% of total RTP
++- Hold & Spin: 15% of total RTP
++- Jackpot:     3% of total RTP (included in H&S allocation)
++"""
+ 
+ from optimization_program.optimization_config import (
+     ConstructScaling,
+@@ -10,8 +17,12 @@ from optimization_program.optimization_config import (
+ 
+ 
+ class OptimizationSetup:
+-    """Game specific optimization setup.
+-    Amends game_config.opt_params, which is required to setup maths configuration file.
++    """Game specific optimization setup for TBD 15625 Ways.
++
++    Configures the optimization algorithm with:
++    - Target RTPs per distribution criteria
++    - Win scaling factors for balancing distributions
++    - Optimization parameters for the Rust solver
+     """
+ 
+     def __init__(self, game_config):
+@@ -19,17 +30,34 @@ class OptimizationSetup:
+         wincaps = {}
+         for bm in game_config.bet_modes:
+             wincaps[bm.get_name()] = bm.get_wincap()
++
+         self.game_config.opt_params = {
++            # ========== BASE MODE ==========
+             "base": {
+                 "conditions": {
+-                    "wincap": ConstructConditions(
+-                        rtp=0.01, av_win=wincaps["base"], search_conditions=wincaps["base"]
++                    # Zero-win criteria
++                    "0": ConstructConditions(
++                        rtp=0,
++                        av_win=0,
++                        search_conditions=0,
+                     ).return_dict(),
+-                    "0": ConstructConditions(rtp=0, av_win=0, search_conditions=0).return_dict(),
++                    # Free game criteria - target 20% RTP allocation
+                     "freegame": ConstructConditions(
+-                        rtp=0.37, hr=200, search_conditions={"symbol": "scatter"}
++                        rtp=0.20,
++                        hr=150,
++                        search_conditions={"symbol": "scatter"},
++                    ).return_dict(),
++                    # Hold & Spin criteria - target 18% RTP allocation (includes jackpot)
++                    "holdnspin": ConstructConditions(
++                        rtp=0.18,
++                        hr=200,
++                        search_conditions={"symbol": "money", "feature": "holdnspin"},
++                    ).return_dict(),
++                    # Base game criteria - 58% RTP
++                    "basegame": ConstructConditions(
++                        hr=4.1,
++                        rtp=0.58,
+                     ).return_dict(),
+-                    "basegame": ConstructConditions(hr=3.5, rtp=0.59).return_dict(),
+                 },
+                 "scaling": ConstructScaling(
+                     [
+@@ -47,14 +75,26 @@ class OptimizationSetup:
+                         },
+                         {
+                             "criteria": "freegame",
+-                            "scale_factor": 0.8,
+-                            "win_range": (1000, 2000),
++                            "scale_factor": 0.9,
++                            "win_range": (200, 500),
+                             "probability": 1.0,
+                         },
+                         {
+                             "criteria": "freegame",
++                            "scale_factor": 1.1,
++                            "win_range": (1000, 2500),
++                            "probability": 1.0,
++                        },
++                        {
++                            "criteria": "holdnspin",
++                            "scale_factor": 0.9,
++                            "win_range": (20, 100),
++                            "probability": 1.0,
++                        },
++                        {
++                            "criteria": "holdnspin",
+                             "scale_factor": 1.2,
+-                            "win_range": (3000, 4000),
++                            "win_range": (200, 1000),
+                             "probability": 1.0,
+                         },
+                     ]
+@@ -76,31 +116,75 @@ class OptimizationSetup:
+                     bias_weights=[0.4],
+                 ).return_dict(),
+             },
+-            "bonus": {
++            # ========== FREE SPINS BUY BONUS ==========
++            "bonus_fs": {
+                 "conditions": {
+-                    "wincap": ConstructConditions(
+-                        rtp=0.01, av_win=wincaps["bonus"], search_conditions=wincaps["bonus"]
++                    "freegame": ConstructConditions(
++                        rtp=0.96,
++                        hr="x",
+                     ).return_dict(),
+-                    "freegame": ConstructConditions(rtp=0.96, hr="x").return_dict(),
+                 },
+                 "scaling": ConstructScaling(
+                     [
+                         {
+                             "criteria": "freegame",
+                             "scale_factor": 0.9,
+-                            "win_range": (20, 50),
++                            "win_range": (20, 100),
+                             "probability": 1.0,
+                         },
+                         {
+                             "criteria": "freegame",
+-                            "scale_factor": 0.8,
+-                            "win_range": (1000, 2000),
++                            "scale_factor": 1.0,
++                            "win_range": (500, 1000),
+                             "probability": 1.0,
+                         },
+                         {
+                             "criteria": "freegame",
+-                            "scale_factor": 1.2,
+-                            "win_range": (3000, 4000),
++                            "scale_factor": 1.1,
++                            "win_range": (2000, 4000),
++                            "probability": 1.0,
++                        },
++                    ]
++                ).return_dict(),
++                "parameters": ConstructParameters(
++                    num_show=5000,
++                    num_per_fence=10000,
++                    min_m2m=4,
++                    max_m2m=8,
++                    pmb_rtp=1.0,
++                    sim_trials=5000,
++                    test_spins=[10, 20, 50],
++                    test_weights=[0.6, 0.2, 0.2],
++                    score_type="rtp",
++                ).return_dict(),
++            },
++            # ========== HOLD & SPIN BUY BONUS ==========
++            "bonus_hns": {
++                "conditions": {
++                    "holdnspin": ConstructConditions(
++                        rtp=0.96,
++                        hr="x",
++                        search_conditions={"symbol": "money", "feature": "holdnspin"},
++                    ).return_dict(),
++                },
++                "scaling": ConstructScaling(
++                    [
++                        {
++                            "criteria": "holdnspin",
++                            "scale_factor": 0.9,
++                            "win_range": (10, 50),
++                            "probability": 1.0,
++                        },
++                        {
++                            "criteria": "holdnspin",
++                            "scale_factor": 1.1,
++                            "win_range": (200, 800),
++                            "probability": 1.0,
++                        },
++                        {
++                            "criteria": "holdnspin",
++                            "scale_factor": 1.3,
++                            "win_range": (1500, 3500),
+                             "probability": 1.0,
+                         },
+                     ]
+
+===== math-sdk/games/0_0_ways/game_override.py -> math-sdk/games/2_0_tbd_15625ways/game_override.py =====
+
+diff --git a/math-sdk/games/0_0_ways/game_override.py b/math-sdk/games/2_0_tbd_15625ways/game_override.py
+index f594c00..39e9ddc 100644
+--- a/math-sdk/games/0_0_ways/game_override.py
++++ b/math-sdk/games/2_0_tbd_15625ways/game_override.py
+@@ -1,25 +1,161 @@
++"""Game override - custom symbol functions, Hold & Spin logic, money symbol assignment.
++
++Key fixes from 1_0_mining_ways:
++- Reduced holdnspin_money_prob (was 0.10-0.15, now 0.04-0.05)
++- Reduced jackpot probability (was 0.5%, now 0.3%)
++- Capped H&S multiplier growth during free spins
++- Added wincap checks during H&S to prevent infinite growth
++- Fixed free spin money values to be less generous
++"""
++
++import random
+ from game_executables import GameExecutables
+ from src.calculations.statistics import get_random_outcome
+ 
+ 
+ class GameStateOverride(GameExecutables):
+     """
+-    This class is is used to override or extend universal state.py functions.
+-    e.g: A specific game may have custom book properties to reset
++    Overrides and extends universal state.py functions for TBD 15625 Ways game.
++    Handles money symbol value assignment, Hold & Spin respin logic, and jackpot evaluation.
+     """
+ 
+     def reset_book(self):
+-        # Reset global values used across multiple projects
++        """Reset global values and Hold & Spin specific state."""
+         super().reset_book()
+-        # Reset parameters relevant to local game only
++        # Hold & Spin state
++        self.holdnspin_board = None
++        self.holdnspin_respins = 0
++        self.holdnspin_win = 0.0
++        self.holdnspin_multiplier = 1
++        self.holdnspin_jackpot = None
++        self.holdnspin_triggered = False
++        self.in_holdnspin = False
++        # Track jackpot types by position (reel, row) -> jackpot_type
++        self.jackpot_positions = {}
+ 
+     def assign_special_sym_function(self):
+-        self.special_symbol_functions = {"W": [self.assign_mult_property]}
++        """Define custom symbol functions for money symbols."""
++        self.special_symbol_functions = {
++            "M": [self.assign_money_value],
++        }
++
++    def assign_money_value(self, symbol):
++        """Assign a prize value to a money symbol based on distribution weights.
++
++        Money symbols can award:
++        - A multiplier value (1x, 2x, 3x, 5x, 10x, 20x, 50x)
++        - A jackpot (MINI=20x, MINOR=50x, MAJOR=200x) with 0.3% chance
++        """
++        # Determine money values based on current game state
++        if hasattr(self, "gametype") and self.gametype == self.config.freegame_type:
++            money_values = self.config.money_values_freegame
++        else:
++            conditions = self.get_current_distribution_conditions()
++            money_values = conditions.get("money_values", self.config.money_values_base)
++
++        # Check for jackpot
++        if random.random() < self.config.money_jackpot_prob:
++            # Award a random jackpot
++            jackpot_type = get_random_outcome(self.config.jackpot_weights)
++            prize_value = self.config.jackpot_values[jackpot_type]
++            symbol.assign_attribute({"prize": prize_value})
++            symbol.has_prize = True
++        else:
++            # Award a regular money value
++            prize_value = get_random_outcome(money_values)
++            symbol.assign_attribute({"prize": prize_value})
++            symbol.has_prize = True
++
++    def assign_money_value_holdnspin(self):
++        """Assign money value specifically during Hold & Spin respins.
++        Returns (prize_value, jackpot_type_or_None).
++        """
++        if hasattr(self, "gametype") and self.gametype == self.config.freegame_type:
++            money_values = self.config.money_values_freegame
++        else:
++            conditions = self.get_current_distribution_conditions()
++            money_values = conditions.get("money_values", self.config.money_values_base)
++
++        # Check for jackpot
++        if random.random() < self.config.money_jackpot_prob:
++            jackpot_type = get_random_outcome(self.config.jackpot_weights)
++            prize_value = self.config.jackpot_values[jackpot_type]
++            return prize_value, jackpot_type
++        else:
++            prize_value = get_random_outcome(money_values)
++            return prize_value, None
++
++    def get_jackpot_type_from_prize(self, prize_value):
++        """Determine if a prize value corresponds to a jackpot.
++        Returns the jackpot type string or None."""
++        for jp_type, jp_value in self.config.jackpot_values.items():
++            if prize_value == jp_value:
++                return jp_type
++        return None
++
++    def perform_holdnspin_respin(self, board, is_freespin=False):
++        """Execute a single Hold & Spin respin.
++
++        For each non-locked position, randomly determine if a money symbol appears.
++        If it does, lock it and assign a prize value. Returns list of new money positions.
+ 
+-    def assign_mult_property(self, symbol):
+-        """Assign symbol multiplier using probabilities defined in config distributions."""
+-        multiplier_value = get_random_outcome(self.get_current_distribution_conditions()["mult_values"])
+-        symbol.assign_attribute({"multiplier": multiplier_value})
++        FIX from 1_0: Uses per-distribution money_prob (reduced from 0.10-0.15 to 0.04-0.05)
++        which controls the rate of new money symbols per position per respin.
++
++        Args:
++            board: The current Hold & Spin board (list of lists of Symbol objects)
++            is_freespin: Whether this is happening during Free Spins
++
++        Returns:
++            new_money_positions: List of dicts with reel/row of newly landed money symbols
++        """
++        conditions = self.get_current_distribution_conditions()
++        money_prob = conditions.get("holdnspin_money_prob", self.config.holdnspin_money_prob)
++        new_money_positions = []
++
++        for reel_idx, reel in enumerate(board):
++            for row_idx, sym in enumerate(reel):
++                if not sym.locked:
++                    # Check if a money symbol lands on this position
++                    if random.random() < money_prob:
++                        # Create a new money symbol at this position
++                        new_sym = self.symbol_storage.create_symbol("M")
++                        prize_value, jackpot_type = self.assign_money_value_holdnspin()
++                        new_sym.assign_attribute({"prize": prize_value})
++                        new_sym.has_prize = True
++                        new_sym.assign_attribute({"locked": True})
++                        board[reel_idx][row_idx] = new_sym
++                        # Track jackpot position if applicable
++                        if jackpot_type is not None:
++                            self.jackpot_positions[(reel_idx, row_idx)] = jackpot_type
++                        new_money_positions.append({
++                            "reel": reel_idx,
++                            "row": row_idx,
++                            "prize": prize_value,
++                            "jackpot_type": jackpot_type,
++                        })
++
++        return new_money_positions
++
++    def lock_money_symbols(self, board):
++        """Lock all money symbols currently on the board."""
++        for reel in board:
++            for sym in reel:
++                if sym.name == "M":
++                    sym.assign_attribute({"locked": True})
++
++    def apply_random_wild_reel(self):
++        """During Free Spins, randomly convert an entire reel to wilds (5% chance).
++        Only applies to reels that can have wilds (reels 2, 3, 4 = indices 1, 2, 3).
++        """
++        if random.random() < self.config.fs_wild_reel_chance:
++            # Choose a random eligible reel (indices 1, 2, 3)
++            wild_reel = random.choice([1, 2, 3])
++            for row_idx in range(len(self.board[wild_reel])):
++                wild_sym = self.symbol_storage.create_symbol("W")
++                self.board[wild_reel][row_idx] = wild_sym
++            # Refresh special symbols after board modification
++            self.get_special_symbols_on_board()
+ 
+     def check_game_repeat(self):
+         """Verify final simulation outcomes satisfied all distribution/criteria conditions."""
+@@ -27,3 +163,9 @@ class GameStateOverride(GameExecutables):
+             win_criteria = self.get_current_betmode_distributions().get_win_criteria()
+             if win_criteria is not None and self.final_win != win_criteria:
+                 self.repeat = True
++
++        # For Hold & Spin criteria, ensure H&S was actually triggered
++        if self.repeat is False:
++            conditions = self.get_current_distribution_conditions()
++            if conditions.get("force_holdnspin", False) and not self.holdnspin_triggered:
++                self.repeat = True
+
+===== math-sdk/games/0_0_ways/gamestate.py -> math-sdk/games/2_0_tbd_15625ways/gamestate.py =====
+
+diff --git a/math-sdk/games/0_0_ways/gamestate.py b/math-sdk/games/2_0_tbd_15625ways/gamestate.py
+index 34aa388..2f841d2 100644
+--- a/math-sdk/games/0_0_ways/gamestate.py
++++ b/math-sdk/games/2_0_tbd_15625ways/gamestate.py
+@@ -1,41 +1,365 @@
+-"""Game logic and event emission for standard 'ways' game with a fixed board size."""
++"""Game logic and event emission for TBD 15625 Ways Hold & Spin game.
+ 
++Features:
++- 6 reels +ù 5 rows ways game (15,625 ways = 5^6)
++- Hold & Spin: triggered by 6+ money symbols
++- Free Spins: triggered by 3+ scatter symbols
++- Fixed Jackpots: MINI (20x), MINOR (50x), MAJOR (200x), GRAND (1000x full grid)
++- Hold & Spin can trigger within Free Spins (with growing multiplier)
++- Random wild reel during Free Spins (5% chance)
++
++Key fixes from 1_0_mining_ways:
++- H&S money probability reduced to prevent RTP inflation
++- FRWCAP reel usage balanced (FR0:FRWCAP = 3:1 vs old 1:5)
++- Wincap checks added mid-H&S to prevent runaway wins
++- Multiplier growth capped during FS Hold & Spin
++"""
++
++from copy import deepcopy
+ from game_override import GameStateOverride
++from game_events import (
++    holdnspin_trigger_event,
++    holdnspin_respin_event,
++    holdnspin_end_event,
++    jackpot_event,
++    set_win_event,
++    set_total_event,
++)
+ 
+ 
+ class GameState(GameStateOverride):
+-    """Handle basegame and freegame logic."""
++    """Handle basegame, freegame, and hold & spin logic."""
+ 
+     def run_spin(self, sim: int, simulation_seed=None) -> None:
++        """Execute a single base game spin with potential feature triggers."""
+         self.reset_seed(sim)
+         self.repeat = True
+         while self.repeat:
+             self.reset_book()
+             self.draw_board(emit_event=True)
+ 
+-            # Evaluate base-game board
++            # Evaluate ways wins on the base game board
+             self.evaluate_ways_board()
+ 
+-            self.win_manager.update_gametype_wins(self.gametype)
+-            # Check Scatter condition and trigger freegame
+-            if self.check_fs_condition() and self.check_freespin_entry():
++            # Check for Hold & Spin trigger (6+ money symbols)
++            holdnspin_triggered = self.check_holdnspin_trigger()
++
++            # Check for Free Spin trigger (3+ scatters)
++            fs_triggered = self.check_fs_condition() and self.check_freespin_entry()
++
++            if holdnspin_triggered and not fs_triggered:
++                # Hold & Spin takes priority when no free spins
++                self.run_hold_and_spin(is_freespin=False)
++                # Track combined base game + H&S wins
++                self.win_manager.update_gametype_wins(self.gametype)
++            elif fs_triggered:
++                # Track base game ways win before entering free spins
++                self.win_manager.update_gametype_wins(self.gametype)
++                # Free Spins (Hold & Spin can trigger within)
+                 self.run_freespin_from_base()
++            else:
++                # Standard base game - track ways win
++                self.win_manager.update_gametype_wins(self.gametype)
++                # Check Hold & Spin criteria satisfaction
++                conditions = self.get_current_distribution_conditions()
++                if conditions.get("force_holdnspin", False):
++                    self.repeat = True
+ 
+             self.evaluate_finalwin()
+             self.check_repeat()
+ 
++            # Additional check: if force_holdnspin, H&S must have triggered
++            if self.repeat is False:
++                conditions = self.get_current_distribution_conditions()
++                if conditions.get("force_holdnspin", False) and not self.holdnspin_triggered:
++                    self.repeat = True
++
+         self.imprint_wins()
+ 
+     def run_freespin(self) -> None:
++        """Execute the free spins feature.
++
++        During free spins:
++        - Money symbols have minimum 2x value
++        - Hold & Spin can trigger within if 6+ money symbols land
++        - Growing multiplier during Hold & Spin respins (+1 per round)
++        - 5% chance of random fully wild reel per spin
++        """
+         self.reset_fs_spin()
++
+         while self.fs < self.tot_fs:
+             self.update_freespin()
+             self.draw_board(emit_event=True)
+ 
++            # Apply random wild reel chance (5% per spec)
++            self.apply_random_wild_reel()
++
++            # Evaluate ways wins
+             self.evaluate_ways_board()
+ 
++            # Check for Hold & Spin trigger within free spins
++            if self.check_holdnspin_trigger():
++                self.run_hold_and_spin(is_freespin=True)
++
++            # Check for free spin retrigger
+             if self.check_fs_condition():
+                 self.update_fs_retrigger_amt()
+ 
+             self.win_manager.update_gametype_wins(self.gametype)
++
++            # FIX: Check wincap during free spins to prevent runaway
++            if self.win_manager.running_bet_win >= self.config.wincap:
++                break
++
+         self.end_freespin()
++
++    def run_hold_and_spin(self, is_freespin=False) -> None:
++        """Execute the Hold & Spin feature.
++
++        Hold & Spin flow:
++        1. Lock all money symbols on the board
++        2. Start with 3 respins
++        3. Each respin: for each non-locked position, check if money symbol lands
++        4. New money symbol: lock it, reset respins to 3
++        5. No new money: decrement respins
++        6. Continue until respins = 0
++        7. If full grid (30 symbols locked): award GRAND jackpot (1000x)
++        8. Sum all money prizes as Hold & Spin win
++
++        Args:
++            is_freespin: If True, applies Free Spin enhancements
++                        (higher money values, growing multiplier)
++        """
++        self.holdnspin_triggered = True
++        self.in_holdnspin = True
++
++        # Record Hold & Spin trigger for statistics
++        self.record({
++            "kind": self.count_money_symbols(),
++            "symbol": "money",
++            "gametype": self.gametype,
++            "feature": "holdnspin",
++        })
++
++        # Create a working copy of the board for Hold & Spin
++        self.holdnspin_board = deepcopy(self.board)
++
++        # Lock all existing money symbols
++        self.lock_money_symbols(self.holdnspin_board)
++
++        # Initialize respins
++        self.holdnspin_respins = self.config.holdnspin_initial_respins
++        self.holdnspin_multiplier = 1
++        respin_count = 0
++
++        # Get initial money positions for trigger event
++        money_positions = self.get_money_positions(self.holdnspin_board)
++        holdnspin_trigger_event(self, money_positions, is_freespin)
++
++        # FIX: Cap maximum multiplier growth during FS H&S to prevent RTP runaway
++        max_fs_multiplier = 10
++
++        # Hold & Spin respin loop
++        while self.holdnspin_respins > 0:
++            respin_count += 1
++
++            # If in free spins, grow multiplier each round (capped)
++            if is_freespin and self.holdnspin_multiplier < max_fs_multiplier:
++                self.holdnspin_multiplier += self.config.fs_holdnspin_mult_growth
++
++            # Perform respin: check each unlocked position for new money symbol
++            new_money = self.perform_holdnspin_respin(self.holdnspin_board, is_freespin)
++
++            if len(new_money) > 0:
++                # New money symbol(s) landed - reset respins
++                self.holdnspin_respins = self.config.holdnspin_initial_respins
++            else:
++                # No new money - decrement respins
++                self.holdnspin_respins -= 1
++
++            # Emit respin event
++            holdnspin_respin_event(
++                self,
++                respin_num=respin_count,
++                respins_remaining=self.holdnspin_respins,
++                new_money_positions=new_money,
++                board=self.holdnspin_board,
++            )
++
++            # FIX: Check for wincap during Hold & Spin
++            current_prize = self.calculate_holdnspin_win(self.holdnspin_board)
++            if (self.win_manager.running_bet_win + current_prize * self.holdnspin_multiplier) >= self.config.wincap:
++                break
++
++        # Calculate Hold & Spin total win
++        holdnspin_prize_sum = self.calculate_holdnspin_win(self.holdnspin_board)
++
++        # Check for GRAND jackpot (full grid)
++        jackpot_awarded = None
++        if self.check_holdnspin_full_grid(self.holdnspin_board):
++            jackpot_awarded = "GRAND"
++            holdnspin_prize_sum += self.config.jackpot_values["GRAND"]
++            jackpot_event(self, "GRAND", self.config.jackpot_values["GRAND"])
++
++        # Apply Free Spin multiplier if applicable
++        holdnspin_final_win = holdnspin_prize_sum * self.holdnspin_multiplier
++
++        # Cap at wincap - running win
++        remaining_cap = max(0, self.config.wincap - self.win_manager.running_bet_win)
++        holdnspin_final_win = min(holdnspin_final_win, remaining_cap)
++
++        # Update win manager
++        self.win_manager.update_spinwin(holdnspin_final_win)
++
++        # Emit Hold & Spin end event
++        holdnspin_end_event(self, holdnspin_final_win, jackpot_awarded)
++
++        # Update set_total for running total
++        set_total_event(self)
++
++        self.in_holdnspin = False
++        self.holdnspin_win = holdnspin_final_win
++
++    def check_freespin_entry(self, scatter_key: str = "scatter") -> bool:
++        """Override to handle Hold & Spin criteria that shouldn't force free spins."""
++        conditions = self.get_current_distribution_conditions()
++
++        # If this is a Hold & Spin forced distribution, don't allow free spins
++        if conditions.get("force_holdnspin", False) and not conditions.get("force_freegame", False):
++            return False
++
++        # Standard free spin entry check
++        if conditions.get("force_freegame", False) and self.count_special_symbols(scatter_key) >= min(
++            self.config.freespin_triggers[self.gametype].keys()
++        ):
++            return True
++
++        # Not a forced distribution but scatters landed naturally
++        if not conditions.get("force_freegame", False) and self.count_special_symbols(scatter_key) >= min(
++            self.config.freespin_triggers[self.gametype].keys()
++        ):
++            return True
++
++        if conditions.get("force_freegame", False):
++            self.repeat = True
++        return False
++
++    def _force_money_on_board(self, target_count):
++        """Force additional money symbols onto the board to reach target_count.
++
++        Draws a board, then replaces random non-special positions with M symbols
++        until the board has at least target_count money symbols.
++        """
++        import random as rng
++        self.create_board_reelstrips()
++
++        # Remove any scatter symbols that would trigger free spins
++        conditions = self.get_current_distribution_conditions()
++        if not conditions.get("force_freegame", False):
++            for reel_idx, reel in enumerate(self.board):
++                for row_idx, sym in enumerate(reel):
++                    if sym.name == "S":
++                        replacement = rng.choice(["A", "K", "Q", "J", "10"])
++                        self.board[reel_idx][row_idx] = self.create_symbol(replacement)
++
++        # Count current money symbols
++        current_money = self.count_money_symbols()
++
++        if current_money >= target_count:
++            self.get_special_symbols_on_board()
++            return
++
++        # Find positions that are not money/wild/scatter
++        available_positions = []
++        for reel_idx, reel in enumerate(self.board):
++            for row_idx, sym in enumerate(reel):
++                if sym.name not in ("M", "W", "S"):
++                    available_positions.append((reel_idx, row_idx))
++
++        # Randomly select positions to place money symbols
++        needed = target_count - current_money
++        if needed > len(available_positions):
++            needed = len(available_positions)
++
++        rng.shuffle(available_positions)
++        for i in range(needed):
++            reel_idx, row_idx = available_positions[i]
++            new_sym = self.create_symbol("M")
++            self.board[reel_idx][row_idx] = new_sym
++
++        # Refresh special symbol tracking
++        self.get_special_symbols_on_board()
++
++    def draw_board(self, emit_event: bool = True, trigger_symbol: str = "scatter") -> None:
++        """Override draw_board to handle Hold & Spin forced distributions.
++
++        For 'force_holdnspin' criteria, ensure enough money symbols land on the board.
++        """
++        conditions = self.get_current_distribution_conditions()
++
++        if conditions.get("force_holdnspin", False) and self.gametype == self.config.basegame_type:
++            # Force a board with enough money symbols for Hold & Spin
++            self._force_money_on_board(self.config.holdnspin_trigger_count)
++
++            if emit_event:
++                from src.events.events import reveal_event
++                reveal_event(self)
++        elif (
++            conditions.get("force_freegame", False)
++            and self.gametype == self.config.basegame_type
++        ):
++            # Standard forced scatter behavior with safety cap
++            from src.calculations.statistics import get_random_outcome
++            num_scatters = get_random_outcome(conditions["scatter_triggers"])
++            # Cap to num_reels - force_special_board can only place 1 per reel
++            num_scatters = min(num_scatters, self.config.num_reels)
++
++            # Use retry limit to avoid infinite loop from stacked specials
++            max_attempts = 200
++            for attempt in range(max_attempts):
++                self._force_special_board(trigger_symbol, num_scatters)
++                if self.count_special_symbols(trigger_symbol) == num_scatters:
++                    break
++            else:
++                # Fallback: just make sure we have at least minimum trigger count
++                min_trigger = min(self.config.freespin_triggers[self.gametype].keys())
++                for attempt in range(max_attempts):
++                    self._force_special_board(trigger_symbol, min_trigger)
++                    if self.count_special_symbols(trigger_symbol) >= min_trigger:
++                        break
++
++            if emit_event:
++                from src.events.events import reveal_event
++                reveal_event(self)
++        elif (
++            not conditions.get("force_freegame", False)
++            and not conditions.get("force_holdnspin", False)
++            and self.gametype == self.config.basegame_type
++        ):
++            # Normal basegame: ensure no scatter trigger and no H&S trigger for non-feature criteria
++            self.create_board_reelstrips()
++            while self.count_special_symbols(trigger_symbol) >= min(
++                self.config.freespin_triggers[self.gametype].keys()
++            ):
++                self.create_board_reelstrips()
++
++            # FIX: For non-H&S criteria, also ensure we don't accidentally trigger H&S
++            if not conditions.get("force_holdnspin", False):
++                retry_count = 0
++                while self.count_money_symbols() >= self.config.holdnspin_trigger_count and retry_count < 100:
++                    self.create_board_reelstrips()
++                    while self.count_special_symbols(trigger_symbol) >= min(
++                        self.config.freespin_triggers[self.gametype].keys()
++                    ):
++                        self.create_board_reelstrips()
++                    retry_count += 1
++
++            if emit_event:
++                from src.events.events import reveal_event
++                reveal_event(self)
++        else:
++            # During freegame or other game types
++            self.create_board_reelstrips()
++            if emit_event:
++                from src.events.events import reveal_event
++                reveal_event(self)
+
+===== math-sdk/games/0_0_ways/run.py -> math-sdk/games/2_0_tbd_15625ways/run.py =====
+
+diff --git a/math-sdk/games/0_0_ways/run.py b/math-sdk/games/2_0_tbd_15625ways/run.py
+index b825f30..d7e5248 100644
+--- a/math-sdk/games/0_0_ways/run.py
++++ b/math-sdk/games/2_0_tbd_15625ways/run.py
+@@ -1,4 +1,5 @@
+-"""Main file for generating results for sample ways-pay game."""
++"""Main file for generating results for TBD 15625 Ways Hold & Spin game."""
++
+ from gamestate import GameState
+ from game_config import GameConfig
+ from game_optimization import OptimizationSetup
+@@ -12,13 +13,14 @@ if __name__ == "__main__":
+ 
+     num_threads = 10
+     rust_threads = 20
+-    batching_size = 50000
++    batching_size = 200000
+     compression = True
+     profiling = False
+ 
+     num_sim_args = {
+-        "base": int(1e4),
+-        "bonus": int(1e4),
++        "base": int(2e5),
++        "bonus_fs": int(2e5),
++        "bonus_hns": int(2e5),
+     }
+ 
+     run_conditions = {
+@@ -27,7 +29,7 @@ if __name__ == "__main__":
+         "run_analysis": True,
+         "run_format_checks": True,
+     }
+-    target_modes = ["base", "bonus"]
++    target_modes = ["base", "bonus_fs", "bonus_hns"]
+ 
+     config = GameConfig()
+     gamestate = GameState(config)
+@@ -52,7 +54,10 @@ if __name__ == "__main__":
+         generate_configs(gamestate)
+ 
+     if run_conditions["run_analysis"]:
+-        custom_keys = [{"symbol": "scatter"}]
++        custom_keys = [
++            {"symbol": "scatter"},
++            {"symbol": "money", "feature": "holdnspin"},
++        ]
+         create_stat_sheet(gamestate, custom_keys=custom_keys)
+ 
+     if run_conditions["run_format_checks"]:
+
+===== math-sdk/games/0_0_ways/readme.txt -> math-sdk/games/2_0_tbd_15625ways/readme.txt =====
+
+diff --git a/math-sdk/games/0_0_ways/readme.txt b/math-sdk/games/2_0_tbd_15625ways/readme.txt
+index 6ac4054..f6f611a 100644
+--- a/math-sdk/games/0_0_ways/readme.txt
++++ b/math-sdk/games/2_0_tbd_15625ways/readme.txt
+@@ -1,16 +1,82 @@
+-# Ways Game 
++TBD 15625 Ways GÇô Hold & Spin Slot Game
++=======================================
+ 
+-Standard ways game with 5-reels and 3-rows. 
++Grid:         6 Reels +ù 5 Rows
++Ways:         15,625 (5^6)
++RTP Versions: 92% / 94% / 96%
++Volatility:   Medium-High
++Max Win:      5,000x Bet
+ 
+-* 9 paying symbols (H1-H5, L1-L4)
+-* 1 wild type of Wild symbol
+-* 1 type of Scatter symbol
+-* Multipliers on Wilds (in freegame only)
+-* Wilds do not appear on 1st reel
++SYMBOL SET
++----------
++Low:    10, J, Q, K, A (metal carved)
++Mid:    LAN (Lantern), HEL (Helmet), PIC (Pickaxe), TNT (TNT Barrel)
++High:   GCA (Gold Cart), DIA (Diamond Cluster), DRI (Drill Machine)
+ 
+-# Basegame 
++Special:
++  W  - Wild (Explosive Charge) - reels 2, 3, 4 only. Substitutes all except S and M.
++  S  - Scatter (Mine Entrance Gate) - triggers Free Spins (3=10, 4=15, 5=20 FS)
++  M  - Money Symbol (Gold Nugget) - triggers Hold & Spin with 6+ on screen.
+ 
+-Minimum of 3 Scatter symbols are needed to enter the freegame. Maximum of 1 Scatter per reel.
++PAY TABLE (at 1x bet)
++---------------------
++Symbol  |  3    |  4    |  5    |  6
++--------|-------|-------|-------|------
++DRI     |  2    |  4    |  8    | 15
++DIA     |  1.5  |  3    |  6    | 12
++GCA     |  1    |  2    |  5    | 10
++TNT     |  0.5  |  1    |  2    |  4
++PIC     |  0.5  |  1    |  2    |  4
++HEL     |  0.5  |  1    |  2    |  4
++LAN     |  0.5  |  1    |  2    |  4
++A       |  0.2  |  0.4  |  1    |  2
++K       |  0.2  |  0.4  |  1    |  2
++Q       |  0.2  |  0.4  |  1    |  2
++J       |  0.2  |  0.4  |  1    |  2
++10      |  0.2  |  0.4  |  1    |  2
+ 
+-# Freegame rules
+-Wild symbols have multipliers ranging from 1x to 5x. Multiplier values compound multiplicitivly (unlike lines games where multiplier values add)
++HOLD & SPIN
++-----------
++Trigger:  6+ Money symbols anywhere
++Respins:  3 (reset to 3 on new money symbol)
++Full Grid (30 symbols): GRAND jackpot (1000x)
++
++Money Symbol Values (base):
++  1x (40%), 2x (25%), 3x (15%), 5x (10%), 10x (6%), 20x (2%), 50x (0.5%)
++  Jackpot chance: 0.3% per Money symbol
++
++Jackpots (fixed):
++  MINI: 20x, MINOR: 50x, MAJOR: 200x, GRAND: 1000x (full grid only)
++
++FREE SPINS
++----------
++Trigger:  3 Scatters = 10 FS, 4 = 15 FS, 5 = 20 FS
++Retrigger: 3 = +5, 4 = +10, 5 = +15
++
++Enhancements:
++  - Money symbols minimum 2x value
++  - Hold & Spin can trigger inside Free Spins
++  - Multiplier grows +1 per respin round during FS Hold & Spin (capped at 10x)
++  - 5% chance of random fully wild reel per spin
++
++BUY FEATURES
++-------------
++Free Spins Buy:     80x bet
++Hold & Spin Buy:   100x bet
++
++RTP CONTRIBUTION SPLIT (96%)
++-----------------------------
++Base Game:   58%
++Free Spins:  20%
++Hold & Spin: 18% (includes jackpot contribution)
++
++Bug Fixes from 1_0_mining_ways
++-------------------------------
++1. FRWCAP wild reel density reduced from ~90% to ~25% wilds on reels 2,3,4
++2. FRWCAP usage ratio changed from 1:5 (83% FRWCAP) to 3:1 (25% FRWCAP)
++3. H&S money probability reduced from 0.10-0.15 to 0.04-0.05 per position
++4. Jackpot probability reduced from 0.5% to 0.3%
++5. H&S multiplier growth capped at 10x during Free Spins
++6. Wincap checks added during H&S respins
++7. Non-feature criteria now prevents accidental H&S triggers
++8. Free spin money values rebalanced with higher weight on lower values
