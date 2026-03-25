@@ -262,7 +262,7 @@ export default {
 	},
 	symbolsStatic: {
 		type: 'sprites',
-		src: new URL('../../assets/sprites/symbolsStatic/symbolsStatic.json', import.meta.url).href,
+		src: new URL('../../assets/sprites/symbolsStatic/sprites.json', import.meta.url).href,
 	},
 	coins: {
 		type: 'spriteSheet',
