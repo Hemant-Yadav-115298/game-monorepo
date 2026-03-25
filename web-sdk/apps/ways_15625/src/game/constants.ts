@@ -4,7 +4,7 @@ import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 100;
 
-export const REEL_PADDING = 0.       ;
+export const REEL_PADDING = 0.53;
 
 // initial board (padded top and bottom)
 export const INITIAL_BOARD: RawSymbol[][] = [
@@ -32,7 +32,7 @@ export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].l
 
 export const BOARD_SIZES = {
 	width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y + 160,
+	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y + 170,
 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;
