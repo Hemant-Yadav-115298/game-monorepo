@@ -72,7 +72,7 @@
 
 		<UI>
 			{#snippet gameName()}
-				<UiGameName name="WAYS GAME" />
+				<UiGameName name="15625 Ways Game" />
 			{/snippet}
 			{#snippet logo()}
 				<Text
