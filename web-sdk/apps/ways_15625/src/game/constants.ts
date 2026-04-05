@@ -32,7 +32,7 @@ export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].l
 
 export const BOARD_SIZES = {
 	width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y + 170,
+	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y *1.34,
 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;
