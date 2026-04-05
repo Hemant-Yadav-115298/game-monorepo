@@ -47,13 +47,14 @@ const animateSymbols = async ({ positions }: { positions: Position[] }) => {
 const getLockedSymbolsFromPositions = (positions: Position[]) => {
 	const rawBoard = stateGameDerived.boardRaw();
 	return positions.map((position) => {
+		const rawReel = rawBoard?.[position.reel] ?? [];
+		const paddedRow = position.row;
+		const displayRow = rawReel.length > 5 ? Math.max(paddedRow - 1, 0) : paddedRow;
 		const rawSymbol =
-			rawBoard?.[position.reel]?.[position.row + 1] ??
-			rawBoard?.[position.reel]?.[position.row] ??
-			({ name: 'M' } as RawSymbol);
+			rawReel[paddedRow] ?? rawReel[displayRow] ?? ({ name: 'M' } as RawSymbol);
 
 		return {
-			position,
+			position: { reel: position.reel, row: displayRow },
 			rawSymbol: { ...rawSymbol, locked: true } as RawSymbol,
 		};
 	});

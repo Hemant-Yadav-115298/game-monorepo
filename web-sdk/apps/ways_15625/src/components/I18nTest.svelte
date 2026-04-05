@@ -7,7 +7,7 @@
 </script>
 
 <Container x={300} alpha={0.5}>
-	<!-- <Rectangle width={280} height={160} /> -->
+	<Rectangle width={0} height={0} />
 	<!-- <Text text={'TRANSLATIONS TEST'} style={{ fill: 0xffffff }} />
 	<Text text={`${context.i18nDerived.home()} (from game)`} style={{ fill: 0xffffff }} y={30} />
 	<Text text={`${context.i18nDerived.settings()} (from ui-pixi)`} style={{ fill: 0xffffff }} y={60} />
