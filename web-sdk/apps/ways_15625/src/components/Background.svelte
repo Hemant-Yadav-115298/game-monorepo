@@ -10,7 +10,9 @@
 		context.stateLayoutDerived.normalBackgroundLayout({ scale: 0.5 }),
 	);
 	const showBaseBackground = $derived(context.stateGame.gameType === 'basegame');
-	const showFeatureBackground = $derived(context.stateGame.gameType === 'freegame');
+	const showFeatureBackground = $derived(
+		['freegame', 'holdnspin'].includes(context.stateGame.gameType),
+	);
 </script>
 
 <Rectangle {...context.stateLayoutDerived.canvasSizes()} backgroundColor={0x000000} zIndex={-3} />

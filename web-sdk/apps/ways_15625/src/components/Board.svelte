@@ -19,6 +19,7 @@
 	import BoardContainer from './BoardContainer.svelte';
 	import BoardMask from './BoardMask.svelte';
 	import BoardBase from './BoardBase.svelte';
+	import HoldAndSpinLockedOverlay from './HoldAndSpinLockedOverlay.svelte';
 
 	const context = getContext();
 
@@ -58,4 +59,6 @@
 			<BoardBase />
 		</BoardContainer>
 	</BoardContext>
+
+	<HoldAndSpinLockedOverlay />
 {/if}

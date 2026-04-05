@@ -26,6 +26,7 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import HoldAndSpinFrame from './HoldAndSpinFrame.svelte';
 	import HoldAndSpinCounter from './HoldAndSpinCounter.svelte';
+	import HoldAndSpinRespinIntro from './HoldAndSpinRespinIntro.svelte';
 	import JackpotCelebration from './JackpotCelebration.svelte';
 	import Transition from './Transition.svelte';
 	import I18nTest from './I18nTest.svelte';
@@ -76,7 +77,7 @@
 			{#snippet logo()}
 				<Text
 					anchor={{ x: 1, y: 0 }}
-					text="ADD YOUR LOGO"
+					text="The ZenCasino"
 					style={{
 						fontFamily: 'Inter, sans-serif',
 						fontSize: REM * 1.5,
@@ -89,14 +90,13 @@
 		</UI>
 		<Win />
 		<FreeSpinIntro />
+		<HoldAndSpinRespinIntro />
 		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
 			<FreeSpinCounter />
 		{/if}
 		<FreeSpinOutro />
 		<HoldAndSpinFrame />
-		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
-			<HoldAndSpinCounter />
-		{/if}
+		<HoldAndSpinCounter />
 		<JackpotCelebration />
 		<Transition />
 
