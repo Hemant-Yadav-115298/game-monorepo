@@ -125,6 +125,172 @@ export default {
 		type: 'sprite',
 		src: new URL('../../assets/sprites/payFrame/payFrame.png', import.meta.url).href,
 	},
+	autospin_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/autospin_active.png',
+			import.meta.url,
+		).href,
+	},
+	autospin_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/autospin_hover.png',
+			import.meta.url,
+		).href,
+	},
+	autospin_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/autospin_initial.png',
+			import.meta.url,
+		).href,
+	},
+	buy_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/buy_active.png',
+			import.meta.url,
+		).href,
+	},
+	buy_hover: {
+		type: 'sprite',
+		src: new URL('../../assets/sprites/uiSlotsAssetsBespoke/buy_hover.png', import.meta.url)
+			.href,
+	},
+	buy_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/buy_inital.png',
+			import.meta.url,
+		).href,
+	},
+	decrement_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/decrement_active.png',
+			import.meta.url,
+		).href,
+	},
+	decrement_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/decrement_hover.png',
+			import.meta.url,
+		).href,
+	},
+	decrement_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/decrement_inital.png',
+			import.meta.url,
+		).href,
+	},
+	increment_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/increment_active.png',
+			import.meta.url,
+		).href,
+	},
+	increment_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/increment_hover.png',
+			import.meta.url,
+		).href,
+	},
+	increment_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/increment_initial.png',
+			import.meta.url,
+		).href,
+	},
+	menu_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/menu_active.png',
+			import.meta.url,
+		).href,
+	},
+	menu_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/menu_hover.png',
+			import.meta.url,
+		).href,
+	},
+	menu_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/menu_initial.png',
+			import.meta.url,
+		).href,
+	},
+	spin_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/spin_active.png',
+			import.meta.url,
+		).href,
+	},
+	spin_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/spin_hover.png',
+			import.meta.url,
+		).href,
+	},
+	spin_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/spin_initial.png',
+			import.meta.url,
+		).href,
+	},
+	stop_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/stop_active.png',
+			import.meta.url,
+		).href,
+	},
+	stop_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/stop_hover.png',
+			import.meta.url,
+		).href,
+	},
+	stop_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/stop_initial.png',
+			import.meta.url,
+		).href,
+	},
+	turbo_active: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/turbo_active.png',
+			import.meta.url,
+		).href,
+	},
+	turbo_hover: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/turbo_hover.png',
+			import.meta.url,
+		).href,
+	},
+	turbo_initial: {
+		type: 'sprite',
+		src: new URL(
+			'../../assets/sprites/uiSlotsAssetsBespoke/turbo_initial.png',
+			import.meta.url,
+		).href,
+	},
 	anticipation: {
 		type: 'spine',
 		src: {

@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { Container, Text } from 'pixi-svelte';
+	import { Container } from 'pixi-svelte';
 	import { Button, type ButtonProps } from 'components-pixi';
 	import { OnHotkey } from 'components-shared';
 	import { stateBetDerived } from 'state-shared';
 
-	import UiSprite from './UiSprite.svelte';
 	import ButtonBetProvider from './ButtonBetProvider.svelte';
-	import { UI_BASE_FONT_SIZE, UI_BASE_SIZE } from '../constants';
-	import { i18nDerived } from '../i18n/i18nDerived';
+	import ButtonBetIcon from './ButtonBetIcon.svelte';
+	import { UI_BASE_SIZE } from '../constants';
 
 	const props: Partial<Omit<ButtonProps, 'children'>> = $props();
 	const disabled = $derived(!stateBetDerived.isBetCostAvailable());
@@ -18,33 +17,18 @@
 	{#snippet children({ key, onpress })}
 		<OnHotkey hotkey="Space" {disabled} {onpress} />
 		<Button {...props} {sizes} {onpress} {disabled}>
-			{#snippet children({ center, hovered })}
+			{#snippet children({ center, hovered, pressed })}
+				{@const isSpin = ['spin_default', 'spin_disabled'].includes(key)}
+				{@const isDisabledState = ['spin_disabled', 'stop_disabled'].includes(key)}
 				<Container {...center}>
-					<UiSprite
-						key="bet"
-						width={sizes.width}
-						height={sizes.height}
-						anchor={0.5}
-						{...disabled || ['spin_disabled', 'stop_disabled'].includes(key)
-							? {
-									backgroundColor: 0xaaaaaa,
-								}
-							: {}}
-					/>
-					<Text
-						anchor={0.5}
-						text={['spin_default', 'spin_disabled'].includes(key)
-							? i18nDerived.bet()
-							: i18nDerived.stop()}
-						style={{
-							align: 'center',
-							wordWrap: true,
-							wordWrapWidth: 200,
-							fontFamily: 'proxima-nova',
-							fontWeight: '600',
-							fontSize: UI_BASE_FONT_SIZE * 0.9,
-							fill: 0xffffff,
-						}}
+					<ButtonBetIcon
+						x={center.x}
+						y={center.y}
+						sizes={sizes}
+						{isSpin}
+						hovered={hovered}
+						pressed={pressed}
+						disabled={disabled || isDisabledState}
 					/>
 				</Container>
 			{/snippet}

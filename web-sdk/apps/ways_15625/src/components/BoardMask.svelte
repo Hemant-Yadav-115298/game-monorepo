@@ -2,7 +2,7 @@
 	import { Rectangle } from 'pixi-svelte';
 
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { SYMBOL_PITCH_X } from '../game/constants';
 
 	type Props = { debug?: boolean };
 
@@ -21,7 +21,7 @@
 
 <Rectangle
 	isMask
-	x={-SYMBOL_SIZE}
-	width={context.stateGameDerived.boardLayout().width + SYMBOL_SIZE * 2}
+	x={-SYMBOL_PITCH_X}
+	width={context.stateGameDerived.boardLayout().width + SYMBOL_PITCH_X * 2}
 	height={context.stateGameDerived.boardLayout().height}
 />

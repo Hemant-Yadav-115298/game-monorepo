@@ -11,7 +11,6 @@
 		StoryGameTemplate,
 		StoryLocale,
 		type TemplateArgs,
-		templateArgs,
 	} from 'components-storybook';
 	import { randomInteger } from 'utils-shared/random';
 
@@ -38,7 +37,7 @@
 
 <Story
 	name="random"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: {},
 		action: async () => {
@@ -47,6 +46,6 @@
 			console.log('Running a book at index', index);
 			await playBet({ ...data, state: data.events });
 		},
-	})}
+	}}
 	{template}
 />

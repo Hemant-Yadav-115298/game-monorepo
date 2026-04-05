@@ -1,7 +1,7 @@
 import { fromPromise } from 'xstate';
 
 import { API_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
-import { stateBet, stateUrlDerived, stateModal } from 'state-shared';
+import { stateBet, stateBetDerived, stateUrlDerived, stateModal } from 'state-shared';
 import { requestBet, requestEndRound } from 'rgs-requests';
 
 import type { BaseBet } from './types';
@@ -12,7 +12,7 @@ const handleRequestBet = async ({ onError }: { onError: () => void }) => {
 			rgsUrl: stateUrlDerived.rgsUrl(),
 			sessionID: stateUrlDerived.sessionID(),
 			currency: stateBet.currency,
-			mode: stateBet.activeBetModeKey,
+			mode: stateBetDerived.activeBetMode()?.mode ?? stateBet.activeBetModeKey,
 			amount: stateBet.betAmount,
 		});
 

@@ -11,7 +11,6 @@
 		StoryGameTemplate,
 		StoryLocale,
 		type TemplateArgs,
-		templateArgs,
 	} from 'components-storybook';
 
 	import Game from '../components/Game.svelte';
@@ -37,80 +36,80 @@
 
 <Story
 	name="reveal"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.reveal,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="setTotalWin"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.setTotalWin,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="freeSpinTrigger"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.freeSpinTrigger,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="updateFreeSpin"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.updateFreeSpin,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="winInfo"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.winInfo,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="setWin"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.setWin,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="freeSpinEnd"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.freeSpinEnd,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="finalWin"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: events.finalWin,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
-	})}
+	}}
 	{template}
 />

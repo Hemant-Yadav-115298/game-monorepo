@@ -11,7 +11,6 @@
 		StoryLocale,
 		StoryGameTemplate,
 		type TemplateArgs,
-		templateArgs,
 	} from 'components-storybook';
 
 	import { stateGame, stateGameDerived } from '../game/stateGame.svelte';
@@ -36,7 +35,7 @@
 	</StoryGameTemplate>
 {/snippet}
 
-<Story name="component (loadingScreen)">
+<Story name="component (loadingScreen)" args={{}}>
 	<StoryLocale lang="en">
 		<Game />
 	</StoryLocale>
@@ -44,7 +43,7 @@
 
 <Story
 	name="preSpin"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: {},
 		action: async () => {
@@ -52,18 +51,18 @@
 				paddingBoard: config.paddingReels[stateGame.gameType],
 			});
 		},
-	})}
+	}}
 	{template}
 />
 
 <Story
 	name="emitterEvent: boardHide"
-	args={templateArgs({
+	args={{
 		skipLoadingScreen: true,
 		data: {},
 		action: async () => {
 			eventEmitter.broadcast({ type: 'boardHide' });
 		},
-	})}
+	}}
 	{template}
 />

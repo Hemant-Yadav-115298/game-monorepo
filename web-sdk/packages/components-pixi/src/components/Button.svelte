@@ -9,6 +9,7 @@
 		type Sizes,
 		type PixiPoint,
 	} from 'pixi-svelte';
+	import { Rectangle as PixiRectangle } from 'pixi.js';
 
 	type ContainerPropsToOmit =
 		| 'eventMode'
@@ -47,6 +48,7 @@
 
 	let hovered = $state(false);
 	let pressed = $state(false);
+	const hitArea = new PixiRectangle(0, 0, sizes.width, sizes.height);
 
 	$effect(() => {
 		if (disabled) {
@@ -54,11 +56,18 @@
 			pressed = false;
 		}
 	});
+
+	$effect(() => {
+		hitArea.width = sizes.width;
+		hitArea.height = sizes.height;
+	});
 </script>
 
 <Container
 	{...containerProps}
 	eventMode="static"
+	hitArea={hitArea}
+	interactiveChildren={false}
 	cursor={disabled ? 'not-allowed' : 'pointer'}
 	pivot={anchorToPivot({ sizes, anchor })}
 	onpointerover={() => {

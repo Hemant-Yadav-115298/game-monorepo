@@ -4,7 +4,17 @@ import type { RawSymbol, SymbolState } from './types';
 
 export const SYMBOL_SIZE = 100;
 
-export const REEL_PADDING = 0.53;
+// Padding between symbols
+export const SYMBOL_GAP_X = 1.5;
+export const SYMBOL_GAP_Y = 1;
+export const SYMBOL_PITCH_X = SYMBOL_SIZE + SYMBOL_GAP_X;
+export const SYMBOL_PITCH_Y = SYMBOL_SIZE + SYMBOL_GAP_Y;
+
+export const REEL_PADDING = 0;
+
+// Board offset inside the frame (design units; scaled by layout)
+export const BOARD_OFFSET_X = 0;
+export const BOARD_OFFSET_Y = -50;
 
 // initial board (padded top and bottom)
 export const INITIAL_BOARD: RawSymbol[][] = [
@@ -31,8 +41,8 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 export const BOARD_DIMENSIONS = { x: INITIAL_BOARD.length, y: INITIAL_BOARD[0].length - 2 };
 
 export const BOARD_SIZES = {
-	width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y *1.34,
+	width: SYMBOL_PITCH_X * BOARD_DIMENSIONS.x,
+	height: SYMBOL_PITCH_Y * BOARD_DIMENSIONS.y,
 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;

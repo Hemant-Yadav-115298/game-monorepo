@@ -5,7 +5,7 @@
 	import { EnableHotkey } from 'components-shared';
 	import { MainContainer } from 'components-layout';
 	import { App, Text, REM } from 'pixi-svelte';
-	import { stateModal } from 'state-shared';
+	import { stateModal, stateMeta, stateBet, type BetModeMeta } from 'state-shared';
 
 	import { UI, UiGameName } from 'components-ui-pixi';
 	import { GameVersion, Modals } from 'components-ui-html';
@@ -30,10 +30,36 @@
 	import JackpotCelebration from './JackpotCelebration.svelte';
 	import Transition from './Transition.svelte';
 	import I18nTest from './I18nTest.svelte';
+	import config from '../game/config';
 
 	const context = getContext();
 
-	onMount(() => (context.stateLayout.showLoadingScreen = true));
+	const configureBetModes = () => {
+		const allowedModes = Object.keys(config.betModes);
+		const nextBetModeMeta: BetModeMeta = {} as BetModeMeta;
+
+		for (const modeKey of allowedModes) {
+			const modeKeyUpper = modeKey.toUpperCase();
+			const baseMeta =
+				stateMeta.betModeMeta[modeKeyUpper] ?? stateMeta.betModeMeta[modeKey];
+			if (!baseMeta) continue;
+
+			nextBetModeMeta[modeKeyUpper] = {
+				...baseMeta,
+				mode: modeKey,
+			};
+		}
+
+		stateMeta.betModeMeta = nextBetModeMeta;
+		if (!nextBetModeMeta[stateBet.activeBetModeKey.toUpperCase()]) {
+			stateBet.activeBetModeKey = 'BASE';
+		}
+	};
+
+	onMount(() => {
+		context.stateLayout.showLoadingScreen = true;
+		configureBetModes();
+	});
 
 	context.eventEmitter.subscribeOnMount({
 		buyBonusConfirm: () => {

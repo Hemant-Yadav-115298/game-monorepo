@@ -1,9 +1,10 @@
 <script lang="ts" module>
 	import { defineMeta } from '@storybook/addon-svelte-csf';
+	import SymbolComponent from '../components/Symbol.svelte';
 
 	const { Story } = defineMeta({
 		title: 'Components/<Symbol>',
-		component: Symbol,
+		component: SymbolComponent,
 		args: {
 			x: 100,
 			y: 100,
@@ -41,7 +42,7 @@
 	] as const;
 </script>
 
-<Story name="component">
+<Story name="component" args={{}}>
 	{#snippet template(args)}
 		<StoryPixiApp {assets}>
 			<Symbol {...args} oncomplete={() => console.log('complete')} />
@@ -49,7 +50,7 @@
 	{/snippet}
 </Story>
 
-<Story name="symbols">
+<Story name="symbols" args={{}}>
 	{#snippet template()}
 		<StoryPixiApp {assets}>
 			<Container scale={0.5}>

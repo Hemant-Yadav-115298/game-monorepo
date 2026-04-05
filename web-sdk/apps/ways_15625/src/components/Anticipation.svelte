@@ -4,7 +4,8 @@
 
 	import { getContext } from '../game/context';
 	import type { Reel } from '../game/stateGame.svelte';
-	import { REEL_PADDING, SYMBOL_SIZE } from '../game/constants';
+	import { SYMBOL_SIZE } from '../game/constants';
+	import { getSymbolX } from '../game/utils';
 
 	type Props = {
 		reel: Reel;
@@ -31,7 +32,7 @@
 	height={SYMBOL_SIZE * 1.6}
 	x={context.stateGameDerived.boardLayout().x -
 		context.stateGameDerived.boardLayout().width * 0.5 +
-		(props.reel.reelIndex + REEL_PADDING) * SYMBOL_SIZE}
+		getSymbolX(props.reel.reelIndex)}
 	y={context.stateGameDerived.boardLayout().y - SYMBOL_SIZE * 0.06}
 >
 	<SpineTrack

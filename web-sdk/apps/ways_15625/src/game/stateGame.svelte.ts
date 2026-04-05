@@ -11,7 +11,10 @@ import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
 import {
 	SYMBOL_SIZE,
+	SYMBOL_PITCH_Y,
 	BOARD_SIZES,
+	BOARD_OFFSET_X,
+	BOARD_OFFSET_Y,
 	INITIAL_BOARD,
 	BOARD_DIMENSIONS,
 	SPIN_OPTIONS_DEFAULT,
@@ -40,7 +43,7 @@ const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
 	const reel = createReelForCascading({
 		reelIndex,
-		symbolHeight: SYMBOL_SIZE,
+		symbolHeight: SYMBOL_PITCH_Y,
 		initialSymbols: INITIAL_BOARD[reelIndex],
 		initialSymbolState: INITIAL_SYMBOL_STATE,
 		onReelStopping: () => {
@@ -94,8 +97,8 @@ export const stateGame = $state({
 });
 
 const boardLayout = () => ({
-	x: stateLayoutDerived.mainLayout().width * 0.5,
-	y: stateLayoutDerived.mainLayout().height * 0.5,
+	x: stateLayoutDerived.mainLayout().width * 0.5 + BOARD_OFFSET_X,
+	y: stateLayoutDerived.mainLayout().height * 0.5 + BOARD_OFFSET_Y,
 	anchor: { x: 0.5, y: 0.5 },
 	pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 	...BOARD_SIZES,

@@ -12,7 +12,7 @@
 	import { MainContainer } from 'components-layout';
 
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE, BOARD_DIMENSIONS } from '../game/constants';
+	import { BOARD_SIZES } from '../game/constants';
 
 	type Props = {
 		children: Snippet<[{ sizes: Sizes }]>;
@@ -24,14 +24,14 @@
 
 	const context = getContext();
 	const BACKGROUND_RATIO = 920 / 720;
-	const BACKGROUND_WIDTH = SYMBOL_SIZE * BOARD_DIMENSIONS.x;
+	const BACKGROUND_WIDTH = BOARD_SIZES.width;
 	const BACKGROUND_SIZES = {
 		width: BACKGROUND_WIDTH,
 		height: BACKGROUND_WIDTH / BACKGROUND_RATIO,
 	};
 	const PANEL_SIZES = {
-		width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-		height: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
+		width: BOARD_SIZES.width,
+		height: BOARD_SIZES.width,
 	};
 
 	let animationName = $state<AnimationName>('intro');
