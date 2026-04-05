@@ -5,7 +5,7 @@ import { stateBet } from 'state-shared';
 import { createEnhanceBoard, createReelForCascading } from 'utils-slots';
 import { createGetWinLevelDataByWinLevelAlias } from 'utils-shared/winLevel';
 
-import type { GameType, RawSymbol, SymbolState } from './types';
+import type { GameType, RawSymbol, SymbolState, Position } from './types';
 import { stateLayoutDerived } from './stateLayout';
 import { winLevelMap } from './winLevelMap';
 import { eventEmitter } from './eventEmitter';
@@ -72,6 +72,11 @@ export type MultiplierSymbol = {
 	oncomplete: () => void;
 };
 
+export type LockedSymbol = {
+	position: Position;
+	rawSymbol: RawSymbol;
+};
+
 export const stateGame = $state({
 	board,
 	gameType: 'basegame' as GameType,
@@ -84,6 +89,7 @@ export const stateGame = $state({
 		jackpotWon: null as string | null,
 		multiplier: 1,
 		previousGameType: 'basegame' as GameType,
+		lockedSymbols: [] as LockedSymbol[],
 	},
 });
 

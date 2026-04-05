@@ -126,10 +126,9 @@ const l5Static = { type: 'sprite', assetKey: '10.png', sizeRatios: { width: 1, h
 
 // Multiplier symbol (spine)
 const mStatic = {
-	type: 'spine',
-	assetKey: 'M',
-	animationName: 'low_multiplier_static',
-	sizeRatios: { width: 0.3, height: 0.3 },
+	type: 'sprite',
+	assetKey: 'M.png',
+	sizeRatios: { width: 1, height: 1 },
 };
 
 // Special symbols
@@ -303,12 +302,7 @@ const infoMap: Record<string, any> = {
 	// === SPECIAL symbols ===
 	M: {
 		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: 'low_multiplier_pay',
-			sizeRatios: { width: 0.3, height: 0.3 },
-		},
+		win: mStatic,
 		postWinStatic: mStatic,
 		static: mStatic,
 		spin: mStatic,

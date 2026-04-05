@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
-import { stateBet } from 'state-shared';
+import { stateBet, stateUrlDerived } from 'state-shared';
 import { sequence } from 'utils-shared/sequence';
 import { waitForTimeout } from 'utils-shared/wait';
 
@@ -10,7 +10,7 @@ import { playBookEvent, normalizeBoard } from './utils';
 import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
 import { stateGame, stateGameDerived } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
-import type { Position } from './types';
+import type { Position, RawSymbol } from './types';
 
 const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) => {
 	if (winLevelData?.alias === 'max') eventEmitter.broadcastAsync({ type: 'uiHide' });
@@ -43,6 +43,47 @@ const animateSymbols = async ({ positions }: { positions: Position[] }) => {
 		symbolPositions: positions,
 	});
 };
+
+const getLockedSymbolsFromPositions = (positions: Position[]) => {
+	const rawBoard = stateGameDerived.boardRaw();
+	return positions.map((position) => {
+		const rawSymbol =
+			rawBoard?.[position.reel]?.[position.row + 1] ??
+			rawBoard?.[position.reel]?.[position.row] ??
+			({ name: 'M' } as RawSymbol);
+
+		return {
+			position,
+			rawSymbol: { ...rawSymbol, locked: true } as RawSymbol,
+		};
+	});
+};
+
+const getLockedSymbolsFromBoard = (board: RawSymbol[][]) =>
+	board.flatMap((reel, reelIndex) =>
+		reel
+			.map((rawSymbol, rowIndex) =>
+				rawSymbol.locked
+					? { position: { reel: reelIndex, row: rowIndex }, rawSymbol }
+					: null,
+			)
+			.filter(Boolean) as { position: Position; rawSymbol: RawSymbol }[],
+	);
+
+const buildHoldAndSpinRevealEvent = ({
+	board,
+	index,
+}: {
+	board: RawSymbol[][];
+	index: number;
+}) => ({
+	index,
+	type: 'reveal' as const,
+	board: normalizeBoard(board),
+	anticipation: new Array(board.length).fill(0),
+	paddingPositions: new Array(board.length).fill(0),
+	gameType: 'holdnspin' as const,
+});
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
@@ -162,12 +203,19 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		stateGame.holdAndSpin.respinsLeft = bookEvent.totalRespins;
 		stateGame.holdAndSpin.multiplier = 1;
 		stateGame.gameType = 'holdnspin';
+		stateGame.holdAndSpin.lockedSymbols = getLockedSymbolsFromPositions(
+			bookEvent.moneyPositions,
+		);
 
 		eventEmitter.broadcast({
 			type: 'holdAndSpinCounterUpdate',
 			current: stateGame.holdAndSpin.respinsLeft,
 			total: stateGame.holdAndSpin.totalRespins,
 		});
+
+		if (stateUrlDerived.replay()) {
+			await waitForTimeout(350);
+		}
 	},
 	holdAndSpinRespin: async (bookEvent: BookEventOfType<'holdAndSpinRespin'>) => {
 		stateGame.holdAndSpin.respinsLeft = bookEvent.respinsRemaining;
@@ -175,24 +223,44 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			stateGame.holdAndSpin.multiplier = bookEvent.multiplier;
 		}
 
+		const nextLockedSymbols = getLockedSymbolsFromBoard(bookEvent.board);
+
 		eventEmitter.broadcast({
 			type: 'holdAndSpinCounterUpdate',
 			current: stateGame.holdAndSpin.respinsLeft,
 			total: stateGame.holdAndSpin.totalRespins,
 		});
 
-		// Update board with newly locked symbols; keep existing locks by settling the board directly
-		const normalizedBoard = normalizeBoard(bookEvent.board);
-		await stateGameDerived.enhancedBoard.settle(normalizedBoard);
+		// Spin reels while locked symbols stay visible via overlay
+		const revealEvent = buildHoldAndSpinRevealEvent({
+			board: bookEvent.board,
+			index: bookEvent.index,
+		});
+		await stateGameDerived.enhancedBoard.spin({ revealEvent });
 
 		if (bookEvent.newMoneyPositions.length > 0) {
 			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_money_landing' });
 			eventEmitter.broadcast({ type: 'cameraShake', intensity: 2, duration: 200 });
 			await animateSymbols({ positions: bookEvent.newMoneyPositions });
+
+			if (bookEvent.respinsRemaining === stateGame.holdAndSpin.totalRespins) {
+				eventEmitter.broadcast({
+					type: 'holdAndSpinRespinIntroUpdate',
+					totalRespins: stateGame.holdAndSpin.respinsLeft,
+				});
+			}
+		}
+
+		stateGame.holdAndSpin.lockedSymbols = nextLockedSymbols;
+
+		if (stateUrlDerived.replay()) {
+			const delay = bookEvent.newMoneyPositions.length > 0 ? 550 : 300;
+			await waitForTimeout(delay);
 		}
 	},
 	holdAndSpinEnd: async (bookEvent: BookEventOfType<'holdAndSpinEnd'>) => {
 		stateGame.holdAndSpin.isActive = false;
+		stateGame.holdAndSpin.lockedSymbols = [];
 		eventEmitter.broadcast({ type: 'holdAndSpinFrameHide' });
 		eventEmitter.broadcast({ type: 'holdAndSpinCounterHide' });
 		stateGame.gameType = stateGame.holdAndSpin.previousGameType;

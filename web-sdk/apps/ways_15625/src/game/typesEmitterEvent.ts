@@ -8,6 +8,7 @@ import type { EmitterEventSound } from '../components/Sound.svelte';
 import type { EmitterEventTransition } from '../components/Transition.svelte';
 import type { EmitterEventHoldAndSpinCounter } from '../components/HoldAndSpinCounter.svelte';
 import type { EmitterEventHoldAndSpinFrame } from '../components/HoldAndSpinFrame.svelte';
+import type { EmitterEventHoldAndSpinRespinIntro } from '../components/HoldAndSpinRespinIntro.svelte';
 import type { EmitterEventJackpotCelebration } from '../components/JackpotCelebration.svelte';
 
 export type EmitterEventGame =
@@ -21,4 +22,5 @@ export type EmitterEventGame =
 	| EmitterEventTransition
 	| EmitterEventHoldAndSpinCounter
 	| EmitterEventHoldAndSpinFrame
+	| EmitterEventHoldAndSpinRespinIntro
 	| EmitterEventJackpotCelebration;

@@ -167,6 +167,62 @@ const DEFAULT_BET_MODE_META = {
 			bannerText: 'example banner text',
 		},
 	},
+	BONUS_FS: {
+		mode: 'BONUS_FS',
+		costMultiplier: 80,
+		type: 'buy',
+		parent: '',
+		children: '',
+		assets: {
+			icon: 'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/icon_bonusbuy.webp',
+			dialogImage:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/bonus_image.webp',
+			dialogVolatility:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/volatility/volatility_04.webp',
+			volatility:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/volatility/volatility_white_04.webp',
+			button:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_8_97/betModes/button_buy.webp',
+		},
+		text: {
+			title: 'BONUS FS',
+			dialog:
+				'Triggers FREE SPINS feature when activated for 80x the player bet amount. The Global Multiplier can reach up to 64x and remains active for the duration of FREE SPINS.',
+			description: 'Each spin may have a random multiplier applied to winning lines.',
+			button: 'BUY',
+			tickerIdle: 'PLACE YOUR BET',
+			tickerSpin: 'BONUS FS BUY ACTIVATED',
+			bannerText: 'example banner text',
+		},
+	},
+	BONUS_HNS: {
+		mode: 'BONUS_HNS',
+		costMultiplier: 100,
+		type: 'buy',
+		parent: '',
+		children: '',
+		assets: {
+			icon: 'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/icon_bonusbuy.webp',
+			dialogImage:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/bonus_image.webp',
+			dialogVolatility:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/volatility/volatility_04.webp',
+			volatility:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_9_97/betModes/volatility/volatility_white_04.webp',
+			button:
+				'https://test-fart-cdn-bucket.s3.ap-southeast-2.amazonaws.com/1_8_97/betModes/button_buy.webp',
+		},
+		text: {
+			title: 'BONUS HNS',
+			dialog:
+				'Triggers HOLD AND SPIN feature when activated for 100x the player bet amount. The Global Multiplier remains active for the duration of the feature.',
+			description: 'Enter the hold and spin feature directly from replay.',
+			button: 'BUY',
+			tickerIdle: 'PLACE YOUR BET',
+			tickerSpin: 'BONUS HNS BUY ACTIVATED',
+			bannerText: 'example banner text',
+		},
+	},
 };
 
 const DEFAULT_GAME_RULE_META = {
