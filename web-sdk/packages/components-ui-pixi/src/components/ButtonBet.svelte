@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Container } from 'pixi-svelte';
 	import { Button, type ButtonProps } from 'components-pixi';
 	import { OnHotkey } from 'components-shared';
 	import { stateBetDerived } from 'state-shared';
@@ -20,17 +19,15 @@
 			{#snippet children({ center, hovered, pressed })}
 				{@const isSpin = ['spin_default', 'spin_disabled'].includes(key)}
 				{@const isDisabledState = ['spin_disabled', 'stop_disabled'].includes(key)}
-				<Container {...center}>
-					<ButtonBetIcon
-						x={center.x}
-						y={center.y}
-						sizes={sizes}
-						{isSpin}
-						hovered={hovered}
-						pressed={pressed}
-						disabled={disabled || isDisabledState}
-					/>
-				</Container>
+				<ButtonBetIcon
+					x={center.x}
+					y={center.y}
+					sizes={sizes}
+					{isSpin}
+					hovered={hovered}
+					pressed={pressed}
+					disabled={disabled || isDisabledState}
+				/>
 			{/snippet}
 		</Button>
 	{/snippet}
