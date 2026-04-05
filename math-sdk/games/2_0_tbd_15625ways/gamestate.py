@@ -223,19 +223,20 @@ class GameState(GameStateOverride):
     def check_freespin_entry(self, scatter_key: str = "scatter") -> bool:
         """Override to handle Hold & Spin criteria that shouldn't force free spins."""
         conditions = self.get_current_distribution_conditions()
+        scatter_reels = self._get_scatter_trigger_reel_count(scatter_key)
 
         # If this is a Hold & Spin forced distribution, don't allow free spins
         if conditions.get("force_holdnspin", False) and not conditions.get("force_freegame", False):
             return False
 
         # Standard free spin entry check
-        if conditions.get("force_freegame", False) and self.count_special_symbols(scatter_key) >= min(
+        if conditions.get("force_freegame", False) and scatter_reels >= min(
             self.config.freespin_triggers[self.gametype].keys()
         ):
             return True
 
         # Not a forced distribution but scatters landed naturally
-        if not conditions.get("force_freegame", False) and self.count_special_symbols(scatter_key) >= min(
+        if not conditions.get("force_freegame", False) and scatter_reels >= min(
             self.config.freespin_triggers[self.gametype].keys()
         ):
             return True
@@ -287,6 +288,22 @@ class GameState(GameStateOverride):
             new_sym = self.create_symbol("M")
             self.board[reel_idx][row_idx] = new_sym
 
+        # Ensure left-to-right reels are filled for adjacency-based triggers
+        target_reels = min(self.config.holdnspin_trigger_count, self.config.num_reels)
+        for reel_idx in range(target_reels):
+            if any(sym.name == "M" for sym in self.board[reel_idx]):
+                continue
+            candidate_rows = [
+                row_idx
+                for row_idx, sym in enumerate(self.board[reel_idx])
+                if sym.name != "M"
+            ]
+            if not candidate_rows:
+                continue
+            row_idx = rng.choice(candidate_rows)
+            new_sym = self.create_symbol("M")
+            self.board[reel_idx][row_idx] = new_sym
+
         # Refresh special symbol tracking
         self.get_special_symbols_on_board()
 
@@ -310,23 +327,29 @@ class GameState(GameStateOverride):
         ):
             # Standard forced scatter behavior with safety cap
             from src.calculations.statistics import get_random_outcome
+            import random as rng
             num_scatters = get_random_outcome(conditions["scatter_triggers"])
             # Cap to num_reels - force_special_board can only place 1 per reel
             num_scatters = min(num_scatters, self.config.num_reels)
 
-            # Use retry limit to avoid infinite loop from stacked specials
-            max_attempts = 200
-            for attempt in range(max_attempts):
-                self._force_special_board(trigger_symbol, num_scatters)
-                if self.count_special_symbols(trigger_symbol) == num_scatters:
-                    break
-            else:
-                # Fallback: just make sure we have at least minimum trigger count
-                min_trigger = min(self.config.freespin_triggers[self.gametype].keys())
-                for attempt in range(max_attempts):
-                    self._force_special_board(trigger_symbol, min_trigger)
-                    if self.count_special_symbols(trigger_symbol) >= min_trigger:
-                        break
+            replacement_choices = list({sym for (_, sym) in self.config.paytable.keys()})
+            replacement_choices = [sym for sym in replacement_choices if sym not in ("S", "M", "W")]
+            if not replacement_choices:
+                replacement_choices = ["A", "K", "Q", "J", "10"]
+
+            self.create_board_reelstrips()
+            for reel_idx in range(num_scatters):
+                row_idx = rng.randrange(self.config.num_rows[reel_idx])
+                self.board[reel_idx][row_idx] = self.create_symbol("S")
+
+            if num_scatters < self.config.num_reels:
+                break_reel = num_scatters
+                for row_idx, sym in enumerate(self.board[break_reel]):
+                    if sym.name == "S":
+                        replacement = rng.choice(replacement_choices)
+                        self.board[break_reel][row_idx] = self.create_symbol(replacement)
+
+            self.get_special_symbols_on_board()
 
             if emit_event:
                 from src.events.events import reveal_event
@@ -338,7 +361,7 @@ class GameState(GameStateOverride):
         ):
             # Normal basegame: ensure no scatter trigger and no H&S trigger for non-feature criteria
             self.create_board_reelstrips()
-            while self.count_special_symbols(trigger_symbol) >= min(
+            while self.count_left_to_right_reels_with_symbol(trigger_symbol) >= min(
                 self.config.freespin_triggers[self.gametype].keys()
             ):
                 self.create_board_reelstrips()
@@ -346,9 +369,9 @@ class GameState(GameStateOverride):
             # FIX: For non-H&S criteria, also ensure we don't accidentally trigger H&S
             if not conditions.get("force_holdnspin", False):
                 retry_count = 0
-                while self.count_money_symbols() >= self.config.holdnspin_trigger_count and retry_count < 100:
+                while self.check_holdnspin_trigger() and retry_count < 100:
                     self.create_board_reelstrips()
-                    while self.count_special_symbols(trigger_symbol) >= min(
+                    while self.count_left_to_right_reels_with_symbol(trigger_symbol) >= min(
                         self.config.freespin_triggers[self.gametype].keys()
                     ):
                         self.create_board_reelstrips()
