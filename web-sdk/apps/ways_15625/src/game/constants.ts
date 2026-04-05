@@ -14,7 +14,7 @@ export const REEL_PADDING = 0;
 
 // Board offset inside the frame (design units; scaled by layout)
 export const BOARD_OFFSET_X = 0;
-export const BOARD_OFFSET_Y = -50;
+export const BOARD_OFFSET_Y = -80;
 
 // initial board (padded top and bottom)
 export const INITIAL_BOARD: RawSymbol[][] = [
