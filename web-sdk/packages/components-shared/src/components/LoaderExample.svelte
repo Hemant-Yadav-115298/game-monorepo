@@ -7,11 +7,12 @@
 
 	const props: Props = $props();
 
-	let showText = $state(true);
+	// let showText = $state(true);
+	let showText = $state(false);
 </script>
 
 <LoaderBase
-	maxWidth={200}
+	maxWidth={500}
 	backgroundColor={'#000000'}
 	timeout={2000}
 	src={props.src}
